@@ -3,7 +3,7 @@ defmodule Kora do
 	alias Kora.Store
 
 	@master "kora-master"
-	@config Application.get_env(:kora, :config)
+	@config Application.get_env(:kora, :config) |> IO.inspect
 
 	def init, do: @config.init()
 	def read_store, do: @config.read_store()
