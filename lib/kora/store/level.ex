@@ -4,7 +4,8 @@ defmodule Kora.Store.Level do
 	@delimiter "×"
 
 	def init do
-		{:ok, ref} = Exleveldb.open("test.db")
+		path = Application.get_env(:kora, :level_path)
+		{:ok, ref} = Exleveldb.open(path)
 		:ets.new(@table, [
 			:public,
 			:named_table,

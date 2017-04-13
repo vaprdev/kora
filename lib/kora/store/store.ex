@@ -9,7 +9,10 @@ defmodule Kora.Store do
 			mutation.delete
 			|> Dynamic.flatten
 			|> Enum.map(fn {key, _value} -> key end)
-		merges = Dynamic.flatten(mutation.merge)
+		merges =
+			mutation.merge
+			|> Dynamic.flatten
+			|> Enum.map(fn {key, value} -> {key, encode(value)} end)
 		module.delete(config, deletes)
 		module.merge(config, merges)
 	end
@@ -20,10 +23,10 @@ defmodule Kora.Store do
 		})
 		config
 		|> module.query_path(path, opts)
-		|> inflate(path, opts, module)
+		|> inflate(path, opts)
 	end
 
-	def inflate(stream, path, opts, module) do
+	def inflate(stream, path, opts) do
 		count = Enum.count(path)
 		stream
 		|> Stream.chunk_by(fn {path, _value} -> Enum.at(path, count) end)
@@ -34,10 +37,11 @@ defmodule Kora.Store do
 			end
 		)
 		|> Stream.flat_map(fn x -> x end)
-		|> Enum.reduce(%{}, fn {path, value}, collect ->
-			Dynamic.put(collect, path, module.decoder(value))
-		end)
+		|> Enum.reduce(%{}, fn {path, value}, collect -> Dynamic.put(collect, path, decode(value)) end)
 		|> Dynamic.get(path)
 	end
+
+	def encode(input), do: Poison.encode!(input)
+	def decode(input), do: Poison.decode!(input)
 
 end

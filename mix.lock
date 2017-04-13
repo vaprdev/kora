@@ -1,6 +1,8 @@
-%{"eleveldb": {:hex, :eleveldb, "2.2.20", "1fff63a5055bbf4bf821f797ef76065882b193f5e8095f95fcd9287187773b58", [:rebar3], []},
+%{"druuid": {:hex, :druuid, "0.3.0", "fc537b609ff33f4ee651f8226acef14f200689a0a7d0a4b1d5cf4c463cd7124c", [:mix], []},
+  "eleveldb": {:hex, :eleveldb, "2.2.20", "1fff63a5055bbf4bf821f797ef76065882b193f5e8095f95fcd9287187773b58", [:rebar3], []},
   "erocksdb": {:hex, :erocksdb, "0.4.1", "59a3258b1460d0e64f7575d912d9af86fa5aa56729abff18e4d3e4fd4a5e01e0", [:rebar3], []},
   "exleveldb": {:hex, :exleveldb, "0.11.0", "e3d1b3ee2420f5bfea088068e0c63c0bb0cd5651da899fd5269c4c0127c87e2c", [:mix], [{:eleveldb, "~> 2.2.19", [hex: :eleveldb, optional: false]}]},
+  "poison": {:hex, :poison, "3.1.0", "d9eb636610e096f86f25d9a46f35a9facac35609a7591b3be3326e99a0484665", [:mix], []},
   "rocksdb": {:hex, :rocksdb, "0.7.0", "3098c613eea74b99d0192f19fa83baf04a39c2a449350b258ed951feff56f3e6", [:rebar3], []},
   "rox": {:git, "https://github.com/leo-project/erocksdb.git", "5d7dd0be1b7e8aea0eee3f1d75208482722adbdc", []},
   "rustler": {:hex, :rustler, "0.9.0", "6fa87ac78f48f70aa8ecfb6e16b8af41c398989d33de41d292b5581d6a2eeb5a", [:mix], []}}

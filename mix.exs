@@ -31,10 +31,9 @@ defmodule Kora.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-	  [
-		  {:erocksdb, "~> 0.4.1"},
-		  {:rocksdb, "~> 0.7.0"},
-		  {:exleveldb, "~> 0.11.0"},
-	  ]
+		[
+			{:exleveldb, "~> 0.11.0"},
+            {:poison, "~> 3.0"},
+		]
 	end
 end

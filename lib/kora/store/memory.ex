@@ -35,7 +35,6 @@ defmodule Kora.Store.Memory do
 		|> Stream.map(&List.first/1)
 		|> Stream.filter(fn item -> item !== nil end)
 		|> Stream.map(fn {path, value} -> {String.split(path, @delimiter), value} end)
-		|> Store.inflate(path, opts, &(&1))
 	end
 
 	def decoder(input), do: input

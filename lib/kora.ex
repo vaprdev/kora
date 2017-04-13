@@ -1,28 +1,19 @@
 defmodule Kora do
 	alias Kora.Mutation
 	alias Kora.Store
-	alias Kora.Store.Level
 
 	@master "kora-master"
+	@config Application.get_env(:kora, :config)
 
-	def read_store do
-		{Kora.Store.Level, {}}
-	end
-
-	def write_stores do
-		[
-			{Kora.Store.Level, {}}
-		]
-	end
-
-	def interceptors do
-		[]
-	end
+	def init, do: @config.init()
+	def read_store, do: @config.read_store()
+	def write_stores, do: @config.write_stores()
+	def interceptors, do: @config.interceptors()
 
 	def scrap do
 		1..100
-		|> Task.async_stream(fn _ ->
-			query_path(["hello"])
+		|> Task.async_stream(fn val ->
+			merge([val], 1)
 		end)
 		|> Enum.to_list
 	end
