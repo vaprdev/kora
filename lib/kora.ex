@@ -3,12 +3,12 @@ defmodule Kora do
 	alias Kora.Store
 
 	@master "kora-master"
-	@config Application.get_env(:kora, :config) |> IO.inspect
 
-	def init, do: @config.init()
-	def read_store, do: @config.read_store()
-	def write_stores, do: @config.write_stores()
-	def interceptors, do: @config.interceptors()
+	def init, do: config().init()
+	def read_store, do: config().read_store()
+	def write_stores, do: config().write_stores()
+	def interceptors, do: config().interceptors()
+	def config(), do: Application.get_env(:kora, :config)
 
 	def scrap do
 		1..100
