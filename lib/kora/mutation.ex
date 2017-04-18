@@ -34,4 +34,31 @@ defmodule Kora.Mutation do
 			Dynamic.put(collect, [path, type], value)
 		end)
 	end
+
+	def combine(left, right) do
+		%{
+			merge:
+				left.merge
+				|> Kora.Mutation.apply(%{delete: right.delete, merge: %{}})
+				|> Kora.Mutation.apply(%{delete: %{}, merge: right.merge}),
+			delete: Dynamic.combine(
+				left.delete,
+				right.delete
+			),
+		}
+	end
+
+	def apply(input, mutation) do
+		deleted =
+			mutation.delete
+			|> Dynamic.flatten
+			|> Enum.reduce(input, fn {path, _value}, collect ->
+				Dynamic.delete(collect, path)
+			end)
+		mutation.merge
+		|> Dynamic.flatten
+		|> Enum.reduce(deleted, fn {path, value}, collect ->
+			Dynamic.put(collect, path, value)
+		end)
+	end
 end
