@@ -1,19 +1,39 @@
 # Kora
 
-**TODO: Add description**
+### What is it?
+Kora is a programmable, real-time database that allows you to store and sync data across all clients both online and offline. Clients (iOS, Android, Web, Servers) can directly connect to Kora and securely read and write data from the system.  Data can also be persisted locally so it is available even if the device goes offline and once it regains connection, Kora will synchronize the missing changes and resolve conflicts automatically.
 
-## Installation
+The major difference between Kora and other systems like Firebase or CouchDB is its **Interceptor Framework**.  This framework provides a way to extend the database by adding hooks that take care of typical API challenges like validating/authenticating input, denormalizing data, and triggering events like Push Notifications or mirroring data into other sources.  This allows for a generic backend while still preserving the ability to keep shared logic on the server instead of duplicating it on the clients.  Since this framework is low-level it can be extended by building a rules engine on top that allows for permissions or denormalization rules to be specified using markup instead of code.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `kora` to your list of dependencies in `mix.exs`:
+### Data Model
+All data in Kora is stored as one huge tree.  It can be thought of as one big object.  Fields can be merged in or deleted and clients can subscribe to sections of the tree and will be notified of any changes underneath them.  Subscriptions can also be stored in the tree for automatic bootstrapping of connections.
 
-```elixir
-def deps do
-  [{:kora, "~> 0.1.0"}]
-end
+#### Example
+```javscript
+{
+	'user:info': {
+		'dax': {
+			name: 'Dax',
+			company: 'ironbay',
+		},
+		'yousef': {
+			name: 'Yousef',
+			company: 'ironbay',
+		}
+	},
+	'company:info': {
+		'ironbay': {
+			name: 'Ironbay',
+			city: 'New York',
+		}
+	},
+	'company:employees': {
+		'ironbay': {
+			'dax': 1493337757300,
+			'yousef': 1493337757300,
+		}
+	}
+}
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/kora](https://hexdocs.pm/kora).
-
+As you can see Kora encourages proper NoSQL data modeling through denormalization.  That means data is written in multiple ways for all the ways it needs to be queried to avoid costly query scans. If we want to find all the employees of company `ironbay` we maintain a list of that result instead of scanning `user:info` and filtering.  While this may seem tedious at first, the *Interceptor Framework* greatly reduces the boilerplate needed to build well denormalized data models.
