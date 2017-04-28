@@ -48,3 +48,7 @@ Kora is provided as a library that you can add to your elixir project like any o
 ```
 {:kora, github: "ironbay/kora"}
 ```
+
+### Configuration
+
+TODO
