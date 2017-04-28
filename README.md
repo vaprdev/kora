@@ -37,3 +37,14 @@ All data in Kora is stored as one huge tree.  It can be thought of as one big ob
 ```
 
 As you can see Kora encourages proper NoSQL data modeling through denormalization.  That means data is written in multiple ways for all the ways it needs to be queried to avoid costly query scans. If we want to find all the employees of company `ironbay` we maintain a list of that result instead of scanning `user:info` and filtering.  While this may seem tedious at first, the *Interceptor Framework* greatly reduces the boilerplate needed to build well denormalized data models.
+
+Kora also supports multiple storage modes and can store data in Cassandra, Postgres, or MySQL.
+
+### Setup
+Kora is written in Elixir and built on top of Erlang OTP to provide a fault tolerant distributed system that doesn't lose data.  You can read more about [why erlang matters here](https://sameroom.io/blog/why-erlang-matters/).  This means today we support extended Kora through Interceptors written in Elixir, however there are plans to support other languages.  That said Elixir is an awesome language with a lot of great ideas that is worth learning.
+
+Kora is provided as a library that you can add to your elixir project like any other library.
+
+```
+{:kora, github: "ironbay/kora"}
+```
