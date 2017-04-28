@@ -1,8 +1,21 @@
 defmodule Kora.Dynamic do
-
+	@doc ~S"""
+	Gets value at path
+	## Examples
+		iex> Kora.Dynamic.get(%{a: %{b: 1}}, [:a, :b])
+		1
+	"""
 	def get(input, []), do: input
+
+	@doc ~S"""
+	Gets value at path or falls back
+	## Examples
+		iex> Kora.Dynamic.get(%{a: %{b: 1}}, [:a, :b, :c], :foo)
+		:foo
+	"""
 	def get(input, path, fallback \\ nil, compare \\ nil) do
-		Kernel.get_in(input, path)
+		input
+		|> Kernel.get_in(path)
 		|> default(fallback, compare)
 	end
 
@@ -52,7 +65,7 @@ defmodule Kora.Dynamic do
 						layers(value, [key | path])
 					end)
 				]
-			false -> []
+			true -> []
 		end
 	end
 

@@ -9,7 +9,7 @@ The major difference between Kora and other systems like Firebase or CouchDB is 
 All data in Kora is stored as one huge tree.  It can be thought of as one big object.  Fields can be merged in or deleted and clients can subscribe to sections of the tree and will be notified of any changes underneath them.  Subscriptions can also be stored in the tree for automatic bootstrapping of connections.
 
 #### Example
-```javscript
+```javascript
 {
 	'user:info': {
 		'dax': {
