@@ -24,7 +24,6 @@ defmodule Kora.Store.Memory do
 	end
 
 	def delete(_config, layers) do
-
 	end
 
 	def query_path(_config, path, opts) do
@@ -39,16 +38,18 @@ defmodule Kora.Store.Memory do
 
 	def decoder(input), do: input
 
-	defp iterate_keys(min, max) do
-		min
-		|> Stream.iterate(fn next ->
-			cond do
-				next === :"$end_of_table" -> :stop
-				next >= max -> :stop
-				true -> :ets.next(@table, next)
-		   end
-		end)
-		|> Stream.take_while(fn next -> next !== :stop end)
+	def iterate_keys(min, max) do
+		Stream.resource(
+			fn -> min end,
+			fn key ->
+				case :ets.next(@table, key) do
+					:"$end_of_table" -> {:halt, nil}
+					result when result >= max -> {:halt, nil}
+					result -> {[result], result}
+				end
+			end,
+			fn _ -> end
+		)
 	end
 
 end

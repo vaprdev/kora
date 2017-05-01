@@ -1,28 +1,67 @@
 defmodule Kora.Dynamic do
+
+
+	def get(input, [head], fallback, compare) do
+		input
+		|> Map.get(head)
+		|> default(fallback, compare)
+	end
+	def get(input, [head | tail], fallback, compare) do
+		case Map.get(input, head) do
+			result when is_map(result) ->
+				get(result, tail, fallback, compare)
+			_ -> fallback
+		end
+	end
 	@doc ~S"""
-	Gets value at path
+	Gets value at path or falls back
 	## Examples
 		iex> Kora.Dynamic.get(%{a: %{b: 1}}, [:a, :b])
 		1
 	"""
-	def get(input, []), do: input
-
+	def get(input, path) do
+		get(input, path, nil, nil)
+	end
 	@doc ~S"""
 	Gets value at path or falls back
 	## Examples
 		iex> Kora.Dynamic.get(%{a: %{b: 1}}, [:a, :b, :c], :foo)
 		:foo
 	"""
-	def get(input, path, fallback \\ nil, compare \\ nil) do
-		input
-		|> Kernel.get_in(path)
-		|> default(fallback, compare)
+	def get(input, path, fallback) do
+		get(input, path, fallback, nil)
 	end
 
+	@doc ~S"""
+	Default to fallback if input is nil
+	## Examples
+		iex> Kora.Dynamic.default(nil, :foo)
+		:foo
+	"""
 	def default(input, fallback), do: default(input, fallback, nil)
+
+	@doc ~S"""
+	Default to fallback if input is equal to compare
+	## Examples
+		iex> Kora.Dynamic.default(:bar, :foo, :bar)
+		:foo
+	"""
 	def default(input, fallback, compare) when input == compare, do: fallback
+
+	@doc ~S"""
+	Defaults to input if not equal to compare
+	## Examples
+		iex> Kora.Dynamic.default(:foo, :bar, :boo)
+		:foo
+	"""
 	def default(input, _compare, _default), do: input
 
+	@doc ~S"""
+	Defaults to input if not equal to compare
+	## Examples
+		iex> Kora.Dynamic.default(:foo, :bar, :boo)
+		:foo
+	"""
 	def put(input, [head], value), do: Map.put(input, head, value)
 	def put(input, [head | tail], value) do
 		child =

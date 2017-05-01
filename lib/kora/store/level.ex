@@ -1,6 +1,6 @@
 defmodule Kora.Store.Level do
 	alias Kora.Store.Prefix
-	@table :koral_level_table
+	@table :kora_level_table
 	@delimiter "×"
 
 	def init do
