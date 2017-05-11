@@ -17,12 +17,11 @@ defmodule Kora.Interceptor do
 	defp prepare(interceptors, mutation, user, {path, data}) do
 		Enum.reduce(interceptors, mutation, fn interceptor, collect ->
 			case interceptor.intercept_write(path, user, data, collect) do
-				{:prepare, result, next} ->
-					prepare(next, interceptors, user)
-					|> Mutation.combine(result)
-				:ok -> collect
-				result = %{merge: _merge, delete: _delete} -> result
-				{:ok, result = %{merge: _merge, delete: _delete} } -> result
+				# {:prepare, result, next} ->
+				# 	prepare(next, interceptors, user)
+				# 	|> Mutation.combine(result)
+				# :ok -> collect
+				{:ok, result } -> result
 			end
 		end)
 	end

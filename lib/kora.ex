@@ -32,14 +32,22 @@ defmodule Kora do
 	end
 
 	def mutation(mut, user \\ @master) do
-		write_stores()
-		|> Task.async_stream(fn store ->
-			Store.write(store, mut)
-		end)
-		|> Stream.run
+		interceptors = Kora.interceptors()
+		case Kora.Interceptor.validate(interceptors, mut, user) do
+			nil ->
+				prepared = Kora.Interceptor.prepare(interceptors, mut, user)
+
+				write_stores()
+				|> Task.async_stream(&Store.write(&1, prepared))
+				|> Stream.run
+
+				{:ok, prepared}
+
+			result -> result
+		end
 	end
 
-	def query_path(path, opts \\ %{}, user \\ @master) do
+	def query_path(path, opts \\ %{}, _user \\ @master) do
 		read_store()
 		|> Store.query_path(path, opts)
 	end
