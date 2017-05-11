@@ -8,6 +8,7 @@ defmodule Kora do
 	def read_store, do: config().read_store()
 	def write_stores, do: config().write_stores()
 	def interceptors, do: config().interceptors()
+	def commands, do: [Kora.Command.Mutation, Kora.Command.Ping | config().commands()]
 	def config(), do: Application.get_env(:kora, :config)
 
 	def scrap do

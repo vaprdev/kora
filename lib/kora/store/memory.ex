@@ -1,5 +1,4 @@
 defmodule Kora.Store.Memory do
-	alias Kora.Store
 	alias Kora.Store.Prefix
 	@delimiter "×"
 	@table :kora_table
@@ -23,7 +22,7 @@ defmodule Kora.Store.Memory do
 		end)
 	end
 
-	def delete(_config, layers) do
+	def delete(_config, _layers) do
 	end
 
 	def query_path(_config, path, opts) do
@@ -48,7 +47,7 @@ defmodule Kora.Store.Memory do
 					result -> {[result], result}
 				end
 			end,
-			fn _ -> end
+			fn _ -> :skip end
 		)
 	end
 

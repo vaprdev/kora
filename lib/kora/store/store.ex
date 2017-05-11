@@ -4,7 +4,7 @@ defmodule Kora.Store do
 	# @callback query_path(config, path)
 	alias Kora.Dynamic
 
-	def write(store = {module, config}, mutation) do
+	def write({module, config}, mutation) do
 		deletes =
 			mutation.delete
 			|> Dynamic.flatten

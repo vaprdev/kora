@@ -3,8 +3,6 @@ defmodule Kora.UUID do
 	@range "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz" |> String.split("") |> Enum.take(@base)
 	@length 8
 	@total @length + 12
-	@max Stream.repeatedly(fn -> List.last(@range) end) |> Stream.take(@total) |> Enum.join
-	@min Stream.repeatedly(fn -> List.first(@range) end) |> Stream.take(@total) |> Enum.join
 
 	def descending(), do: descending_from(:os.system_time(:millisecond))
 	def descending_from(time), do: generate(-time, @range)
@@ -32,5 +30,5 @@ defmodule Kora.UUID do
 		generate(div(time, @base), count - 1, random, collect)
 	end
 
-	def generate(_time, _count, random, collect), do: collect
+	def generate(_time, _count, _random, collect), do: collect
 end

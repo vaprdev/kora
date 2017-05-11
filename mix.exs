@@ -33,7 +33,10 @@ defmodule Kora.Mixfile do
   defp deps do
 		[
 			{:exleveldb, "~> 0.11.0"},
-            {:poison, "~> 3.0"},
+			{:poison, "~> 3.0"},
+			# {:partisan, "~> 0.2.2"},
+			# {:lasp_pg, "~> 0.0.1"},
+			{:cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.3" },
 		]
 	end
 end

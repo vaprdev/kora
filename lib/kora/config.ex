@@ -3,27 +3,32 @@ defmodule Kora.Config do
 	@callback write_stores() :: []
 	@callback read_store() :: any
 	@callback interceptors() :: []
+	@callback commands() :: []
 end
 
 defmodule Kora.Config.Sample do
 	@behaviour Kora.Config
-	alias Kora.Store.Level
+	alias Kora.Store.Memory
 
 	def init do
-		Level.init()
+		Memory.init
 	end
 
 	def write_stores() do
 		[
-			{Level, nil}
+			{Memory, nil}
 		]
 	end
 
 	def read_store() do
-		{Level, nil}
+		{Memory, nil}
 	end
 
 	def interceptors() do
+		[]
+	end
+
+	def commands() do
 		[]
 	end
 

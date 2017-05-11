@@ -1,11 +1,17 @@
 defmodule Kora.Dynamic do
 
 
+	def get(input, [], fallback, compare) do
+		input
+		|> default(fallback, compare)
+	end
+
 	def get(input, [head], fallback, compare) do
 		input
 		|> Map.get(head)
 		|> default(fallback, compare)
 	end
+
 	def get(input, [head | tail], fallback, compare) do
 		case Map.get(input, head) do
 			result when is_map(result) ->

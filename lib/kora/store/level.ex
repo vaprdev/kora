@@ -20,7 +20,7 @@ defmodule Kora.Store.Level do
 	end
 
 	def query_path(_config, path, opts) do
-		{min, max} = Kora.Store.Prefix.range(path, @delimiter, opts)
+		{min, max} = Prefix.range(path, @delimiter, opts)
 		ref()
 		|> Exleveldb.iterator
 		|> stream(min, max)
