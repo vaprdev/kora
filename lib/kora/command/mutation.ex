@@ -2,12 +2,12 @@ defmodule Kora.Command.Mutation do
 	use Kora.Command
 
 	def handle_command({"kora.mutation", mutation, _v}, _from, state = %{user: user}) do
-		result = mutation |> parse |> Kora.mutation(user)
+		{:ok, result} = mutation |> parse |> Kora.mutation(user)
 		{:reply, result, state}
 	end
 
 	def handle_command({"kora.mutation", mutation, _v}, _from, state) do
-		result = mutation |> parse |> Kora.mutation
+		{:ok, result} = mutation |> parse |> Kora.mutation
 		{:reply, result, state}
 	end
 
