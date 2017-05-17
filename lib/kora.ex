@@ -1,6 +1,7 @@
 defmodule Kora do
 	alias Kora.Mutation
 	alias Kora.Store
+	alias Kora.Query
 
 	@master "kora-master"
 
@@ -8,7 +9,7 @@ defmodule Kora do
 	def read_store, do: config().read_store()
 	def write_stores, do: config().write_stores()
 	def interceptors, do: config().interceptors()
-	def commands, do: [Kora.Command.Mutation, Kora.Command.Ping | config().commands()]
+	def commands, do: [Kora.Command.Mutation, Kora.Command.Ping, Kora.Command.Query | config().commands()]
 	def config(), do: Application.get_env(:kora, :config)
 
 	def scrap do
@@ -44,6 +45,27 @@ defmodule Kora do
 				{:ok, prepared}
 
 			result -> result
+		end
+	end
+
+	def query(query, user \\ @master) do
+		query
+		|> Query.flatten
+		|> Task.async_stream(fn {path, opts} -> { path, opts, query_path(path, opts, user) } end)
+		|> Stream.map(fn {:ok, value} -> value end)
+		|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
+			collect
+			|> Mutation.merge(path, data)
+			|> delete(path, opts)
+		end)
+	end
+
+	defp delete(mutation, path, opts) do
+		cond do
+			opts === %{} ->
+				mutation
+				|> Mutation.delete(path)
+			true -> mutation
 		end
 	end
 
