@@ -8,20 +8,20 @@ end
 
 defmodule Kora.Config.Sample do
 	@behaviour Kora.Config
-	alias Kora.Store.Memory
+	alias Kora.Store.Level
 
 	def init do
-		Memory.init
+		Level.init
 	end
 
 	def write_stores() do
 		[
-			{Memory, nil}
+			{Level, nil}
 		]
 	end
 
 	def read_store() do
-		{Memory, nil}
+		{Level, nil}
 	end
 
 	def interceptors() do
