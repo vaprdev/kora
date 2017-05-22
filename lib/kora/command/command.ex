@@ -2,7 +2,7 @@ defmodule Kora.Command do
 
 	def handle(action, body, version, source, state) do
 		{response, result, data} =
-			Kora.commands()
+			Kora.Config.commands()
 			|> Stream.map(&(&1.handle_command({action, body, version}, source, state)))
 			|> Stream.filter(&(&1 !== nil))
 			|> Stream.take(1)

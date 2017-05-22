@@ -30,5 +30,8 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :kora,
-	config: Kora.Config.Sample,
+    writes: [
+		{Kora.Store.Level, directory: "kora.db"}
+	],
+	read: {Kora.Store.Level, directory: "kora.db"},
 	level_path: "kora.db"

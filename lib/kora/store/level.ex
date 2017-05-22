@@ -3,32 +3,32 @@ defmodule Kora.Store.Level do
 	@table :kora_level_table
 	@delimiter "×"
 
-	def init do
-		path = Application.get_env(:kora, :level_path)
-		{:ok, ref} = Exleveldb.open(path)
+	def init([directory: directory]) do
+		{:ok, ref} = Exleveldb.open(directory)
 		:ets.new(@table, [
 			:public,
 			:named_table,
 			read_concurrency: true,
 		])
-		:ets.insert(@table, {:ref, ref})
+		:ets.insert(@table, {directory, ref})
 	end
 
-	defp ref do
-		{_, value} = @table |> :ets.lookup(:ref) |> List.first
+	defp ref([directory: directory]) do
+		{_, value} = @table |> :ets.lookup(directory) |> List.first
 		value
 	end
 
-	def query_path(_config, path, opts) do
+	def query_path(config, path, opts) do
 		{min, max} = Prefix.range(path, @delimiter, opts)
-		ref()
+		config
+		|> ref
 		|> Exleveldb.iterator
 		|> stream(min, max)
 		|> Stream.map(fn {path, value} -> {String.split(path, @delimiter), value} end)
 	end
 
-	def merge(_config, layers) do
-		ref = ref()
+	def merge(config, layers) do
+		ref = ref(config)
 		layers
 		|> Enum.each(fn {path, value} ->
 			joined = Enum.join(path, @delimiter)
@@ -36,8 +36,8 @@ defmodule Kora.Store.Level do
 		end)
 	end
 
-	def delete(_config, paths) do
-		ref = ref()
+	def delete(config, paths) do
+		ref = ref(config)
 		paths
 		|> Stream.flat_map(fn path ->
 			{min, max} = Kora.Store.Prefix.range(path, @delimiter, %{})

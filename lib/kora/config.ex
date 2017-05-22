@@ -1,35 +1,9 @@
 defmodule Kora.Config do
-	@callback init() :: any
-	@callback write_stores() :: []
-	@callback read_store() :: any
-	@callback interceptors() :: []
-	@callback commands() :: []
-end
-
-defmodule Kora.Config.Sample do
-	@behaviour Kora.Config
-	alias Kora.Store.Level
-
-	def init do
-		Level.init
-	end
-
-	def write_stores() do
-		[
-			{Level, nil}
-		]
-	end
-
-	def read_store() do
-		{Level, nil}
-	end
-
-	def interceptors() do
-		[]
-	end
-
+	def writes(), do: Application.get_env(:kora, :writes) || []
+	def read(), do: Application.get_env(:kora, :read)
+	def interceptors(), do: Application.get_env(:kora, :interceptors) || []
 	def commands() do
-		[]
+		custom = Application.get_env(:kora, :commands) || []
+		[Kora.Command.Mutation, Kora.Command.Ping, Kora.Command.Query | custom]
 	end
-
 end
