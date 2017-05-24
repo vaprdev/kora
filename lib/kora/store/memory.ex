@@ -4,7 +4,7 @@ defmodule Kora.Store.Memory do
 	@table :kora_table
 	# use Kora.Store
 
-	def init do
+	def init(_args) do
 		:ets.new(@table, [
 			:ordered_set,
 			:public,
