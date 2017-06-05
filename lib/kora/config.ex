@@ -4,6 +4,6 @@ defmodule Kora.Config do
 	def interceptors(), do: Application.get_env(:kora, :interceptors) || []
 	def commands() do
 		custom = Application.get_env(:kora, :commands) || []
-		[Kora.Command.Mutation, Kora.Command.Ping, Kora.Command.Query | custom]
+		[Kora.Command.Mutation, Kora.Command.Ping, Kora.Command.Query, Kora.Command.Watch, | custom]
 	end
 end
