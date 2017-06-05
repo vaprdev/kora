@@ -8,7 +8,9 @@ defmodule Kora.Application do
 		|> MapSet.new
 		|> Enum.each(fn {store, arg} -> store.init(arg) end)
 
-		children = []
+		children = [
+			supervisor(Registry, [:duplicate, Kora.Watch])
+		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]
 		Supervisor.start_link(children, opts)
 	end

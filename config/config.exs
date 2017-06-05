@@ -28,3 +28,9 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+config :kora,
+	writes: [ {Kora.Store.Memory, directory: "kora.db"} ],
+	read: {Kora.Store.Memory, directory: "kora.db"},
+	interceptors: [],
+	commands: []

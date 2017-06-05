@@ -31,6 +31,8 @@ defmodule Kora do
 			nil ->
 				prepared = Kora.Interceptor.prepare(interceptors, mut, user)
 
+				Kora.Watch.broadcast_mutation(prepared)
+
 				Kora.Config.writes()
 				|> Task.async_stream(&Store.write(&1, prepared))
 				|> Stream.run

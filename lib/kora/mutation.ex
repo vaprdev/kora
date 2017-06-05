@@ -61,4 +61,10 @@ defmodule Kora.Mutation do
 			Dynamic.put(collect, path, value)
 		end)
 	end
+
+	def inflate(path, layer) do
+		new
+		|> Dynamic.put([:merge | path], layer.merge)
+		|> Dynamic.put([:delete | path], layer.delete)
+	end
 end
