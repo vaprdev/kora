@@ -5,4 +5,9 @@ defmodule Kora.Command.Watch do
 		Kora.watch([])
 		{:reply, true, Map.put(state, :watcher, self())}
 	end
+
+	def handle_info(msg, _source, state) do
+		IO.inspect(msg)
+		{:noreply, state}
+	end
 end
