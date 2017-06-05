@@ -18,10 +18,10 @@ defmodule Kora.Command do
 		}
 	end
 
-	def handle_info(msg, source, state) do
+	def trigger_info(msg, source, state) do
 		result =
 			Kora.Config.commands()
-			|> Stream.map(&(&1.handle_command(msg, source, state)))
+			|> Stream.map(&(&1.handle_info(msg, source, state)))
 			|> Stream.filter(&(&1 !== nil))
 			|> Enum.at(0) || {:noreply, state}
 		case result do

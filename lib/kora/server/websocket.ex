@@ -32,7 +32,8 @@ defmodule Kora.Websocket do
 	end
 
 	def websocket_info(msg, req, state) do
-		case Kora.Command.handle_info(msg, {:websocket, self()}, state.data) do
+		IO.inspect(msg)
+		case Kora.Command.trigger_info(msg, {:websocket, self()}, state.data) do
 			{:noreply, data} ->
 				{:ok, req, %{
 					state |
