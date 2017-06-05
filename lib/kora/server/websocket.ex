@@ -31,8 +31,20 @@ defmodule Kora.Websocket do
 		}}
 	end
 
-	def websocket_info(_, _req, state) do
-		{:ok, state}
+	def websocket_info(msg, req, state) do
+		case Kora.Command.handle_info(msg, {:websocket, self()}, state.data) do
+			{:noreply, data} ->
+				{:ok, req, %{
+					state |
+					data: data
+				}}
+			{result, data} ->
+				json = Poison.encode!(result)
+				{:reply, {:text, json}, req, %{
+					state |
+					data: data
+				}}
+		end
 	end
 
 end

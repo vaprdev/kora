@@ -1,4 +1,5 @@
 defmodule Kora.Command do
+	alias Kora.UUID
 
 	def handle(action, body, version, source, state) do
 		{response, result, data} =
@@ -17,6 +18,26 @@ defmodule Kora.Command do
 		}
 	end
 
+	def handle_info(msg, source, state) do
+		result =
+			Kora.Config.commands()
+			|> Stream.map(&(&1.handle_command(msg, source, state)))
+			|> Stream.filter(&(&1 !== nil))
+			|> Enum.at(0) || {:noreply, state}
+		case result do
+			{:noreply, state} -> result
+			{action, body, data} ->
+				{
+					%{
+						key: UUID.ascending(),
+						action: action,
+						body: body
+					},
+					data
+				}
+		end
+	end
+
 	defmacro __using__(_opts) do
 		quote do
 			@before_compile Kora.Command
@@ -26,6 +47,10 @@ defmodule Kora.Command do
 	defmacro __before_compile__(_env) do
 		quote do
 			def handle_command({_action, _body, _version}, _from, state) do
+				nil
+			end
+
+			def handle_info(msg, _from, state) do
 				nil
 			end
 		end
