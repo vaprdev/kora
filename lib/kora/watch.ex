@@ -2,7 +2,7 @@ defmodule Kora.Watch do
 	alias Kora.Mutation
 
 	def watch(key) do
-		Registry.register(__MODULE__, key, 1)
+		Registry.register(__MODULE__, {:mutation, key}, 1)
 	end
 
 	def members(key) do
