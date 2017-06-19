@@ -69,12 +69,13 @@ defmodule Kora do
 		|> Store.query_path(path, opts)
 	end
 
-	def index(mut, name, path, next) do
+	def index(mut, name, path) do
+		next = Kora.Dynamic.get(mut.merge, path)
 		old = query_path(path)
 		mut =
 			case query_path(path) do
 				nil -> mut
-				old -> Mutation.delete([name, old] ++ path)
+				old -> Mutation.delete(mut, [name, old] ++ path)
 			end
 		mut
 		|> Mutation.merge([name, next] ++ path, :os.system_time(:millisecond))
