@@ -37,6 +37,8 @@ defmodule Kora do
 				|> Task.async_stream(&Store.write(&1, prepared))
 				|> Stream.run
 
+				Kora.Interceptor.commit(interceptors, prepared, user)
+
 				{:ok, prepared}
 
 			result -> result
