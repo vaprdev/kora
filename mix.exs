@@ -36,7 +36,8 @@ defmodule Kora.Mixfile do
 			{:poison, "~> 3.0"},
 			# {:partisan, "~> 0.2.2"},
 			# {:lasp_pg, "~> 0.0.1"},
-			{:cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.3" },
+			{:cowlib, github: "ninenines/cowlib", ref: "master", override: true, manager: :rebar3},
+			{:cowboy, github: "ninenines/cowboy", ref: "2.0.0-pre.7", override: true, manager: :rebar3},
 		]
 	end
 end

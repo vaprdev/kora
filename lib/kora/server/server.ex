@@ -1,10 +1,14 @@
 defmodule Kora.Server do
 	def start_link(port) do
-		:cowboy.start_http(
+		:cowboy.start_clear(
 			:http,
 			100,
 			[{:port, port}],
-			[{:env, [{:dispatch, config()}]}]
+			%{
+				env: %{
+					dispatch: config()
+				}
+			}
 		)
 	end
 
