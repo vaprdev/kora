@@ -81,7 +81,7 @@ defmodule Kora do
 				old -> Mutation.delete(mut, [name, old] ++ path)
 			end
 		mut
-		|> Mutation.merge(name ++ [next], :os.system_time(:millisecond))
+		|> Mutation.merge(name ++ [next] ++ path, :os.system_time(:millisecond))
 	end
 
 end
