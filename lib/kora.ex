@@ -73,8 +73,7 @@ defmodule Kora do
 
 	@spec index(map, list(String.t), list(String.t)) :: map
 	def index(mut, name, path) do
-		next = Kora.Dynamic.get(mut.merge, path)
-		name = name |> inspect
+		next = Kora.Dynamic.get(mut.merge, path) |> inspect
 		old = query_path(path) |> inspect
 		mut =
 			case query_path(path) do
