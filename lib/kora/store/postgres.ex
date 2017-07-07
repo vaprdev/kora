@@ -45,13 +45,13 @@ defmodule Kora.Store.Postgres do
 
 	def delete(config, []), do: nil
 	def delete([name: name], paths) do
-		paths
-		|> Task.async_stream(fn path ->
-			joined = Enum.join(path, @delimiter)
-			name
-			|> Postgrex.query!("DELETE FROM kora WHERE path <@ $1", [joined])
-		end)
-		|> Stream.run
+		statement =
+			paths
+			|> Enum.with_index
+			|> Enum.map(fn {item ,index} -> "path <@ $#{index + 1}" end)
+			|> Enum.join("OR")
+		name
+		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}", paths |> Enum.map(&Enum.join(&1, @delimiter)))
 	end
 
 	def child_spec(hostname, username, password \\ "", database \\ "postgres") do
