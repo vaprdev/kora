@@ -7,7 +7,6 @@ defmodule Kora.Application do
 
 		children = [
 			supervisor(Registry, [:duplicate, Kora.Watch]),
-			Kora.Store.Postgres.child_spec("192.168.1.242", "postgres")
 		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]
 		Supervisor.start_link(children, opts)
