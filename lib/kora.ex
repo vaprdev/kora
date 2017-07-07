@@ -5,6 +5,12 @@ defmodule Kora do
 
 	@master "kora-master"
 
+	def init do
+		[ Kora.Config.read() | Kora.Config.writes() ]
+		|> MapSet.new
+		|> Enum.each(fn {store, arg} -> store.init(arg) end)
+	end
+
 	def scrap do
 		1..100
 		|> Task.async_stream(fn val ->

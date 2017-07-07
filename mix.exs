@@ -38,6 +38,8 @@ defmodule Kora.Mixfile do
 			# {:lasp_pg, "~> 0.0.1"},
 			{:cowlib, github: "ninenines/cowlib", ref: "master", override: true, manager: :rebar3},
 			{:cowboy, github: "ninenines/cowboy", ref: "2.0.0-pre.7", override: true, manager: :rebar3},
+			{:postgrex, "~> 0.13.3"},
+			{:poolboy, "~> 1.5"},
 		]
 	end
 end

@@ -30,7 +30,7 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :kora,
-	writes: [ {Kora.Store.Memory, directory: "kora.db"} ],
-	read: {Kora.Store.Memory, directory: "kora.db"},
+	writes: [ {Kora.Store.Postgres, name: :postgres} ],
+	read: {Kora.Store.Postgres, name: :postgres},
 	interceptors: [],
 	commands: []
