@@ -72,10 +72,9 @@ defmodule Kora do
 	end
 
 	def index(mut, name, path), do: index(mut, name, path, path)
-	def index(mut, name, path, prefix), do: index(mut, name, path, prefix, :os.system_time(:millisecond))
 
 	@spec index(map, list(String.t), list(String.t)) :: map
-	def index(mut, name, path, prefix, value) do
+	def index(mut, name, path, prefix) do
 		next = Kora.Dynamic.get(mut.merge, path) |> inspect
 		mut =
 			case query_path(path) do
@@ -83,7 +82,7 @@ defmodule Kora do
 				old -> Mutation.delete(mut, name ++ [inspect(old)] ++ prefix)
 			end
 		mut
-		|> Mutation.merge(name ++ [next] ++ prefix, value)
+		|> Mutation.merge(name ++ [next] ++ prefix, :os.system_time(:millisecond))
 	end
 
 end
