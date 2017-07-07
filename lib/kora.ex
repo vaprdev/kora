@@ -78,7 +78,7 @@ defmodule Kora do
 		mut =
 			case query_path(path) do
 				nil -> mut
-				old -> Mutation.delete(mut, [name, old] ++ path)
+				old -> Mutation.delete(mut, name ++ [old] ++ path)
 			end
 		mut
 		|> Mutation.merge(name ++ [next] ++ path, :os.system_time(:millisecond))

@@ -18,9 +18,9 @@ defmodule Kora.Store do
 	end
 
 	def query_path({module, config}, path, opts \\ %{}) do
-		opts = Map.merge(opts, %{
+		opts = Map.merge(%{
 			limit: 0,
-		})
+		}, opts)
 		config
 		|> module.query_path(path, opts)
 		|> inflate(path, opts)
