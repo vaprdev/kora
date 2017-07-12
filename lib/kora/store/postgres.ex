@@ -22,7 +22,7 @@ defmodule Kora.Store.Postgres do
 			SELECT path, value
 			FROM kora
 			WHERE path <@ $1
-		""" |> IO.inspect, [joined] |> IO.inspect)
+		""", [joined])
 		|> Map.get(:rows)
 		|> Stream.map(fn [path, value] ->
 			splits =
@@ -73,8 +73,9 @@ defmodule Kora.Store.Postgres do
 
 	defp label(path) do
 		path
-		|> Enum.map(&String.replace(&1, ":", "_"))
+		|> IO.inspect
 		|> Enum.join(@delimiter)
+		|> String.replace(":", "_")
 	end
 
 end
