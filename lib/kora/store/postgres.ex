@@ -15,9 +15,8 @@ defmodule Kora.Store.Postgres do
 		""", [])
 	end
 
-
 	def query_path([name: name], path, opts) do
-		joined = Enum.join(path, @delimiter)
+		joined = label(path)
 		name
 		|> Postgrex.query!("""
 			SELECT path, value
@@ -25,7 +24,13 @@ defmodule Kora.Store.Postgres do
 			WHERE path <@ $1
 		""" |> IO.inspect, [joined] |> IO.inspect)
 		|> Map.get(:rows)
-		|> Stream.map(fn [path, value] -> {String.split(path, @delimiter), value} end)
+		|> Stream.map(fn [path, value] ->
+			splits =
+				path
+				|> String.replace("_", ":")
+				|> String.split(@delimiter)
+			{splits, value}
+		end)
 	end
 
 	def merge(config, []), do: nil
@@ -36,7 +41,7 @@ defmodule Kora.Store.Postgres do
 				{
 					index + 2,
 					["($#{index}, $#{index + 1})" | statement],
-					[Enum.join(path, @delimiter), Poison.encode!(value) | params],
+					[label(path), Poison.encode!(value) | params],
 				}
 		end)
 		name
@@ -51,7 +56,10 @@ defmodule Kora.Store.Postgres do
 			|> Enum.map(fn {item ,index} -> "path <@ $#{index + 1}" end)
 			|> Enum.join("OR")
 		name
-		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}", paths |> Enum.map(&Enum.join(&1, @delimiter)))
+		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
+			paths
+			|> Enum.map(&label(&1))
+		)
 	end
 
 	def child_spec(opts) do
@@ -61,6 +69,12 @@ defmodule Kora.Store.Postgres do
 			name: :postgres,
 		])
 		Postgrex.child_spec(opts)
+	end
+
+	defp label(path) do
+		path
+		|> Enum.map(&String.replace(&1, ":", "_"))
+		|> Enum.join(@delimiter)
 	end
 
 end
