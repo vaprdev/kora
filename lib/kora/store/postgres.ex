@@ -60,6 +60,7 @@ defmodule Kora.Store.Postgres do
 			pool_size: 50,
 			name: :postgres,
 		])
+		Postgrex.child_spec(opts)
 	end
 
 end
