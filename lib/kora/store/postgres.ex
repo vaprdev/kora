@@ -41,7 +41,7 @@ defmodule Kora.Store.Postgres do
 				{
 					index + 2,
 					["($#{index}, $#{index + 1})" | statement],
-					[label(path), Poison.encode!(value) | params],
+					[label(path) |> IO.inspect, Poison.encode!(value) |> IO.inspect | params],
 				}
 		end)
 		name
