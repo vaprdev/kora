@@ -23,8 +23,7 @@ defmodule Kora.Store.Postgres do
 			SELECT path, value
 			FROM kora
 			WHERE path <@ $1
-		""", [joined])
-		|> IO.inspect
+		""" |> IO.inspect, [joined])
 		|> Map.get(:rows)
 		|> Stream.map(fn [path, value] -> {String.split(path, @delimiter), value} end)
 	end
