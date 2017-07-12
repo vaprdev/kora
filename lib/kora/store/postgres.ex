@@ -29,7 +29,7 @@ defmodule Kora.Store.Postgres do
 				path
 				|> String.replace("_", ":")
 				|> String.split(@delimiter)
-			{splits, Poison.decode!(value)}
+			{splits, value}
 		end)
 	end
 
@@ -41,7 +41,7 @@ defmodule Kora.Store.Postgres do
 				{
 					index + 2,
 					["($#{index}, $#{index + 1})" | statement],
-					[label(path) |> IO.inspect, Poison.encode!(value) |> IO.inspect | params],
+					[label(path), value | params],
 				}
 		end)
 		name

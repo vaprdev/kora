@@ -81,7 +81,11 @@ defmodule Kora do
 
 	@spec index(map, list(String.t), list(String.t)) :: map
 	def index(mut, name, path, prefix) do
-		next = Kora.Dynamic.get(mut.merge, path) |> inspect
+		next =
+			case Kora.Dynamic.get(mut.merge, path) do
+				result when is_binary(result) -> result
+				result -> inspect(result)
+			end
 		mut =
 			case query_path(path) do
 				nil -> mut
