@@ -54,17 +54,12 @@ defmodule Kora.Store.Postgres do
 		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}", paths |> Enum.map(&Enum.join(&1, @delimiter)))
 	end
 
-	def child_spec(hostname, username, password \\ "", database \\ "postgres") do
-		import Supervisor.Spec
-		worker(Postgrex, [[
-			hostname: hostname,
-			username: username,
-			password: password,
-			database: database,
+	def child_spec() do
+		Postgrex.child_spec(
 			types: Kora.Store.Postgres.Types,
 			pool_size: 50,
 			name: :postgres,
-		]])
+		)
 	end
 
 end
