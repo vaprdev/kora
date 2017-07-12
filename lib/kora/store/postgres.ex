@@ -54,12 +54,12 @@ defmodule Kora.Store.Postgres do
 		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}", paths |> Enum.map(&Enum.join(&1, @delimiter)))
 	end
 
-	def child_spec() do
-		Postgrex.child_spec(
+	def child_spec(opts) do
+		opts = Keyword.merge(opts, [
 			types: Kora.Store.Postgres.Types,
 			pool_size: 50,
 			name: :postgres,
-		)
+		])
 	end
 
 end
