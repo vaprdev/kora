@@ -1,6 +1,6 @@
 defmodule Kora.UUID do
-	@base 63
-	@range "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz" |> String.split("") |> Enum.take(@base)
+	@base 62
+	@range "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" |> String.split("") |> Enum.take(@base)
 	@length 8
 	@total @length + 12
 
