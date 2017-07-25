@@ -62,10 +62,6 @@ defmodule Kora.Interceptor do
 
 	defmacro __before_compile__(_env) do
 		quote do
-			def intercept_write(_, _, _, mutation) do
-				{:ok, mutation}
-			end
-
 			def intercept_delivery(_, _, _, _) do
 				:ok
 			end
