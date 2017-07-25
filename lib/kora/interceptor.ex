@@ -26,6 +26,8 @@ defmodule Kora.Interceptor do
 		end)
 	end
 
+	def validate(_interceptors, _mut, "kora-master"), do: nil
+
 	def validate(interceptors, mutation, user) do
 		interceptors
 		|> trigger_interceptors(mutation, :validate_write, user)
