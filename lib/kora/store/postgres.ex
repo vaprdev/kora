@@ -25,10 +25,7 @@ defmodule Kora.Store.Postgres do
 		""", [joined])
 		|> Map.get(:rows)
 		|> Stream.map(fn [path, value] ->
-			splits =
-				path
-				|> String.replace("_", ":")
-				|> String.split(@delimiter)
+			splits = unlabel(path)
 			{splits, value}
 		end)
 	end
@@ -75,6 +72,14 @@ defmodule Kora.Store.Postgres do
 		path
 		|> Enum.join(@delimiter)
 		|> String.replace(":", "_")
+		|> String.replace("-", "__")
+	end
+
+	defp unlabel(input) do
+		input
+		|> String.replace("__", "-")
+		|> String.replace("_", ":")
+		|> String.split(@delimiter)
 	end
 
 end
