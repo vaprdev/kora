@@ -33,7 +33,7 @@ defmodule Kora do
 
 	def mutation(mut, user \\ @master) do
 		interceptors = Kora.Config.interceptors()
-		case Kora.Interceptor.validate(interceptors, mut, user) do
+		case Kora.Interceptor.validate_write(interceptors, mut, user) do
 			nil ->
 				prepared = Kora.Interceptor.prepare(interceptors, mut, user)
 
@@ -72,9 +72,13 @@ defmodule Kora do
 		end
 	end
 
-	def query_path(path, opts \\ %{}, _user \\ @master) do
-		Kora.Config.read()
-		|> Store.query_path(path, opts)
+	def query_path(path, opts \\ %{}, user \\ @master) do
+		case Kora.Interceptor.resolve(Kora.Config.interceptors(), path, user, opts) do
+			nil -> 
+				Kora.Config.read()
+				|> Store.query_path(path, opts)
+			result -> result
+		end
 	end
 
 	def index(mut, name, path), do: index(mut, name, path, path)

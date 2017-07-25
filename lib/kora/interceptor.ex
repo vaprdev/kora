@@ -26,9 +26,16 @@ defmodule Kora.Interceptor do
 		end)
 	end
 
-	def validate(_interceptors, _mut, "kora-master"), do: nil
+	def validate_read(_interceptors, _mut, "kora-master"), do: nil
 
-	def validate(interceptors, mutation, user) do
+	def validate_read(interceptors, mutation, user) do
+		interceptors
+		|> trigger_interceptors(mutation, :validate_read, user)
+	end
+
+	def validate_write(_interceptors, _mut, "kora-master"), do: nil
+
+	def validate_write(interceptors, mutation, user) do
 		interceptors
 		|> trigger_interceptors(mutation, :validate_write, user)
 	end
@@ -81,6 +88,10 @@ defmodule Kora.Interceptor do
 			end
 
 			def validate_write(_path, _user, _layer, _mutation) do
+				:ok
+			end
+
+			def validate_read(_path, _user, _layer) do
 				:ok
 			end
 		end
