@@ -56,6 +56,7 @@ defmodule Kora.Store.Postgres do
 		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
 			paths
 			|> Enum.map(&label(&1))
+			|> IO.inspect
 		)
 	end
 
@@ -70,16 +71,19 @@ defmodule Kora.Store.Postgres do
 
 	defp label(path) do
 		path
+		|> Stream.map(&String.replace(&1, ":", "_"))
+		|> Stream.map(&String.replace(&1, "-", "__"))
+		|> Stream.map(&String.replace(&1, ".", "___"))
 		|> Enum.join(@delimiter)
-		|> String.replace(":", "_")
-		|> String.replace("-", "__")
 	end
 
 	defp unlabel(input) do
 		input
-		|> String.replace("__", "-")
-		|> String.replace("_", ":")
 		|> String.split(@delimiter)
+		|> Stream.map(&String.replace(&1, "___", "."))
+		|> Stream.map(&String.replace(&1, "__", "-"))
+		|> Stream.map(&String.replace(&1, "_", ":"))
+		|> Enum.to_list
 	end
 
 end
