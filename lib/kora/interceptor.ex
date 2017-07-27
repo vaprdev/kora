@@ -1,5 +1,6 @@
 defmodule Kora.Interceptor do
 	alias Kora.Mutation
+	alias Kora.Query
 
 	def resolve(interceptors, path, user, opts) do
 		interceptors
@@ -26,13 +27,21 @@ defmodule Kora.Interceptor do
 		end)
 	end
 
-	def validate_read(_interceptors, _path, opts, "kora-master"), do: nil
+	def validate_read(_interceptors, query, "kora-master"), do: nil
+	def validate_read(interceptors, query, user) do
+		query
+		|> Query.flatten
+		|> Stream.map(fn {path, opts} -> validate_read(interceptors, path, opts, user) end)
+		|> Stream.filter(&(&1 !== :ok))
+		|> Enum.at(0)
+	end
 
+	def validate_read(_interceptors, _path, opts, "kora-master"), do: nil
 	def validate_read(interceptors, path, opts, user) do
 		interceptors
-		|> Stream.map(fn mod ->
-			
-		end)
+		|> Stream.map(&(&1.validate_read(path, user, opts)))
+		|> Stream.filter(&(&1 !== :ok))
+		|> Enum.at(0)
 	end
 
 	def validate_write(_interceptors, _mut, "kora-master"), do: nil

@@ -2,11 +2,14 @@ defmodule Kora do
 	alias Kora.Mutation
 	alias Kora.Store
 	alias Kora.Query
+	alias Kora.Interceptor
+	alias Kora.Dynamic
+	alias Kora.Config
 
 	@master "kora-master"
 
 	def init do
-		[ Kora.Config.read() | Kora.Config.writes() ]
+		[ Config.read() | Config.writes() ]
 		|> MapSet.new
 		|> Enum.each(fn {store, arg} -> store.init(arg) end)
 	end
@@ -32,18 +35,18 @@ defmodule Kora do
 	end
 
 	def mutation(mut, user \\ @master) do
-		interceptors = Kora.Config.interceptors()
-		case Kora.Interceptor.validate_write(interceptors, mut, user) do
+		interceptors = Config.interceptors()
+		case Interceptor.validate_write(interceptors, mut, user) do
 			nil ->
-				prepared = Kora.Interceptor.prepare(interceptors, mut, user)
+				prepared = Interceptor.prepare(interceptors, mut, user)
 
 				Kora.Watch.broadcast_mutation(prepared)
 
-				Kora.Config.writes()
+				Config.writes()
 				|> Task.async_stream(&Store.write(&1, prepared))
 				|> Stream.run
 
-				Kora.Interceptor.commit(interceptors, prepared, user)
+				Interceptor.commit(interceptors, prepared, user)
 
 				{:ok, prepared}
 
@@ -52,15 +55,21 @@ defmodule Kora do
 	end
 
 	def query(query, user \\ @master) do
-		query
-		|> Query.flatten
-		|> Task.async_stream(fn {path, opts} -> { path, opts, query_path(path, opts, user, true) } end)
-		|> Stream.map(fn {:ok, value} -> value end)
-		|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
-			collect
-			|> Mutation.merge(path, data)
-			|> delete(path, opts)
-		end)
+		case Interceptor.validate_read(Config.interceptors(), query, user) do
+			nil ->
+				query
+				|> Query.flatten
+				|> Task.async_stream(fn {path, opts} ->
+					{ path, opts, query_path(path, opts, user, true) } 
+				end)
+				|> Stream.map(fn {:ok, value} -> value end)
+				|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
+					collect
+					|> Mutation.merge(path, data)
+					|> delete(path, opts)
+				end)
+			result -> result
+		end
 	end
 
 	defp delete(mutation, path, opts) do
@@ -73,13 +82,18 @@ defmodule Kora do
 	end
 
 	def query_path(path, opts \\ %{}, user \\ @master) do
-		query_path(path, opts, user, true)
+		interceptors = Config.interceptors()
+		case Interceptor.validate_read(interceptors, path, opts, user) do
+			nil ->
+				query_path(path, opts, user, true)
+			result -> result
+		end
 	end
 
 	defp query_path(path, opts, user, true) do
-		case Kora.Interceptor.resolve(Kora.Config.interceptors(), path, user, opts) do
+		case Interceptor.resolve(Config.interceptors(), path, user, opts) do
 			nil -> 
-				Kora.Config.read()
+				Config.read()
 				|> Store.query_path(path, opts)
 			result -> result
 		end
@@ -90,7 +104,7 @@ defmodule Kora do
 	@spec index(map, list(String.t), list(String.t)) :: map
 	def index(mut, name, path, prefix) do
 		next =
-			case Kora.Dynamic.get(mut.merge, path) do
+			case Dynamic.get(mut.merge, path) do
 				result when is_binary(result) -> result
 				result -> inspect(result)
 			end
