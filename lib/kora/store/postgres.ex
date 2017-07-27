@@ -56,7 +56,6 @@ defmodule Kora.Store.Postgres do
 		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
 			paths
 			|> Enum.map(&label(&1))
-			|> IO.inspect
 		)
 	end
 
