@@ -54,7 +54,7 @@ defmodule Kora do
 	def query(query, user \\ @master) do
 		query
 		|> Query.flatten
-		|> Task.async_stream(fn {path, opts} -> { path, opts, query_path(path, opts, user) } end)
+		|> Task.async_stream(fn {path, opts} -> { path, opts, query_path(path, opts, user, true) } end)
 		|> Stream.map(fn {:ok, value} -> value end)
 		|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
 			collect
@@ -73,6 +73,10 @@ defmodule Kora do
 	end
 
 	def query_path(path, opts \\ %{}, user \\ @master) do
+		query_path(path, opts, user, true)
+	end
+
+	defp query_path(path, opts, user, true) do
 		case Kora.Interceptor.resolve(Kora.Config.interceptors(), path, user, opts) do
 			nil -> 
 				Kora.Config.read()

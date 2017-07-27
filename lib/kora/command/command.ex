@@ -4,7 +4,7 @@ defmodule Kora.Command do
 	def handle(action, body, version, source, state) do
 		{response, result, data} =
 			Kora.Config.commands()
-			|> Stream.map(&(&1.handle_command({action, body, version}, source, state)))
+			|> Stream.map(&trigger_command(&1, {action, body, version}, source, state))
 			|> Stream.filter(&(&1 !== nil))
 			|> Stream.take(1)
 			|> Enum.at(0) || {:error, :invalid_command, state}
@@ -16,6 +16,16 @@ defmodule Kora.Command do
 			},
 			data,
 		}
+	end
+
+	defp trigger_command(module, command, source, state) do
+		try do
+			module.handle_command(command, source, state)
+		rescue
+			e -> { :error, inspect(e), state}
+		catch
+			_, e -> { :error, inspect(e), state}
+		end
 	end
 
 	def trigger_info(msg, source, state) do

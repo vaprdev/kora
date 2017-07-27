@@ -26,11 +26,13 @@ defmodule Kora.Interceptor do
 		end)
 	end
 
-	def validate_read(_interceptors, _mut, "kora-master"), do: nil
+	def validate_read(_interceptors, _path, opts, "kora-master"), do: nil
 
-	def validate_read(interceptors, mutation, user) do
+	def validate_read(interceptors, path, opts, user) do
 		interceptors
-		|> trigger_interceptors(mutation, :validate_read, user)
+		|> Stream.map(fn mod ->
+			
+		end)
 	end
 
 	def validate_write(_interceptors, _mut, "kora-master"), do: nil
@@ -91,7 +93,7 @@ defmodule Kora.Interceptor do
 				:ok
 			end
 
-			def validate_read(_path, _user, _layer) do
+			def validate_read(_path, _user, _opts) do
 				:ok
 			end
 		end
