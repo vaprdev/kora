@@ -22,7 +22,13 @@ defmodule Kora.Store.Memory do
 		end)
 	end
 
-	def delete(_config, _layers) do
+	def delete(_config, layers) do
+		layers
+		|> Enum.each(fn path ->
+			{min, max} = Prefix.range(path, @delimiter, %{})
+			iterate_keys(min, max)
+			|> Enum.each(fn path -> :ets.delete(@table, path) end)
+		end)
 	end
 
 	def query_path(_config, path, opts) do
