@@ -1,6 +1,7 @@
 defmodule Kora.Interceptor do
 	alias Kora.Mutation
 	alias Kora.Query
+	require IEx
 
 	def resolve(interceptors, path, user, opts) do
 		interceptors
@@ -15,15 +16,13 @@ defmodule Kora.Interceptor do
 		|> Enum.reduce(mutation, &prepare(interceptors, &2, user, &1))
 	end
 
-	defp prepare(interceptors, mutation, user, {path, data}) do
-		Enum.reduce(interceptors, mutation, fn interceptor, collect ->
-			case interceptor.intercept_write(path, user, data, collect) do
-				# {:prepare, result, next} ->
-				# 	prepare(next, interceptors, user)
-				# 	|> Mutation.combine(result)
-				# :ok -> collect
-				{:ok, result } -> result
-			end
+	defp prepare(interceptors, collect, user, {path, data}) do
+		interceptors
+		|> Enum.reduce(collect, fn interceptor, collect ->
+			with _ <- 1,
+				%{merge: merge, delete: delete} <- collect,
+				{:ok, result} <- interceptor.intercept_write(path, user, data, collect),
+			do: result
 		end)
 	end
 

@@ -5,6 +5,7 @@ defmodule Kora do
 	alias Kora.Interceptor
 	alias Kora.Dynamic
 	alias Kora.Config
+	require IEx
 
 	@master "kora-master"
 
@@ -36,21 +37,18 @@ defmodule Kora do
 
 	def mutation(mut, user \\ @master) do
 		interceptors = Config.interceptors()
-		case Interceptor.validate_write(interceptors, mut, user) do
-			nil ->
-				prepared = Interceptor.prepare(interceptors, mut, user)
+		with _ <- 1,
+			nil <- Interceptor.validate_write(interceptors, mut, user),
+			prepared = %{merge: merge, delete: delete} <- Interceptor.prepare(interceptors, mut, user)
+		do
+			Kora.Watch.broadcast_mutation(prepared)
 
-				Kora.Watch.broadcast_mutation(prepared)
+			Config.writes()
+			|> Task.async_stream(&Store.write(&1, prepared))
+			|> Stream.run
 
-				Config.writes()
-				|> Task.async_stream(&Store.write(&1, prepared))
-				|> Stream.run
-
-				Interceptor.commit(interceptors, prepared, user)
-
-				{:ok, prepared}
-
-			result -> result
+			Interceptor.commit(interceptors, prepared, user)
+			{:ok, prepared}
 		end
 	end
 
