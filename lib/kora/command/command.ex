@@ -2,20 +2,26 @@ defmodule Kora.Command do
 	alias Kora.UUID
 
 	def handle(action, body, version, source, state) do
-		{response, result, data} =
-			Kora.Config.commands()
-			|> Stream.map(&trigger_command(&1, {action, body, version}, source, state))
-			|> Stream.filter(&(&1 !== nil))
-			|> Stream.take(1)
-			|> Enum.at(0) || {:error, :invalid_command, state}
-		{
-			%{
-				action: response,
-				body: result,
-				version: 1,
-			},
-			data,
-		}
+		case trigger_command({action, body, version}, source, state) do
+			{:noreply, data} -> {:noreply, data}
+			{response, result, data} ->
+				{
+					%{
+						action: response,
+						body: result,
+						version: 1,
+					},
+					data,
+				}
+		end
+	end
+
+	def trigger_command(command, source, state) do
+		Kora.Config.commands()
+		|> Stream.map(&trigger_command(&1, command, source, state))
+		|> Stream.filter(&(&1 !== nil))
+		|> Stream.take(1)
+		|> Enum.at(0) || {:error, :invalid_command, state}
 	end
 
 	defp trigger_command(module, command, source, state) do
