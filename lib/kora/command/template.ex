@@ -23,6 +23,12 @@ defmodule Kora.Command.Template do
 	end
 
 	def handle_command({"kora.template.call", %{"name" => name, "args" => args}, _v}, from, state = %{templates: templates}) do
+		args =
+			args
+			|> Stream.with_index
+			|> Stream.map(fn {value, index} -> {Integer.to_string(index), value} end)
+			|> Enum.into(%{})
+
 		case Map.get(templates, {name, Enum.count(args)}) do
 			nil -> {:error, :invalid_template, state}
 			%{ action: action, template: template, version: version} ->
