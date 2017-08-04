@@ -73,12 +73,14 @@ defmodule Kora.Store.Postgres do
 		|> Stream.map(&String.replace(&1, ":", "_"))
 		|> Stream.map(&String.replace(&1, "-", "__"))
 		|> Stream.map(&String.replace(&1, ".", "___"))
+		|> Stream.map(&String.replace(&1, "+", "____"))
 		|> Enum.join(@delimiter)
 	end
 
 	defp unlabel(input) do
 		input
 		|> String.split(@delimiter)
+		|> Stream.map(&String.replace(&1, "____", "+"))
 		|> Stream.map(&String.replace(&1, "___", "."))
 		|> Stream.map(&String.replace(&1, "__", "-"))
 		|> Stream.map(&String.replace(&1, "_", ":"))
