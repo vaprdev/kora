@@ -52,7 +52,7 @@ defmodule Kora.Worker do
 			defp save_state(state = %{data: old}, next) when next !== old do
 				state =
 					state
-					|> Map.put(:data)
+					|> Map.put(:data, next)
 				state.key
 				|> path
 				|> Kora.merge(%{
