@@ -2,6 +2,7 @@ defmodule Kora.Worker do
 
 	defmacro __using__(_opts) do
 		quote do
+			@before_compile Kora.Worker
 			use GenServer
 			alias Kora.UUID
 
@@ -56,6 +57,14 @@ defmodule Kora.Worker do
 			end
 
 			defp save_state(state, _next), do: state
+		end
+	end
+
+	defmacro __before_compile__(_env) do
+		quote do
+			def info(_msg, state), do: {:noreply, state}
+			def cast(_msg, state), do: {:noreply, state}
+			def call(_msg, _from, state), do: {:noreply, state}
 		end
 	end
 
