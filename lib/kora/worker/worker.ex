@@ -5,28 +5,24 @@ defmodule Kora.Worker do
 			use GenServer
 			alias Kora.UUID
 
+			def start_link(state), do: GenServer.start_link(__MODULE__, [state])
 			def start_link(key, args), do: GenServer.start_link(__MODULE__, [key, args])
 
+			def init([state]) do
+				state.data
+				|> __MODULE__.resume
+				|> handle_result(state)
+			end
+
 			def init([key, args]) do
-				send(self(), :boot)
-				{:ok, %{
+				IO.puts("NICE")
+				args
+				|> __MODULE__.first
+				|> handle_result(%{
 					key: key,
 					args: args,
 					data: %{},
-				}}
-			end
-
-			def handle_info(:boot, state) do
-				state.key
-				|> path
-				|> Kora.merge(%{
-					"key" => state.key,
-					"args" => state.args,
 				})
-
-				state.args
-				|> __MODULE__.boot
-				|> handle_result(state)
 			end
 
 			def handle_info(msg, state), do: msg |> __MODULE__.info(state.data) |> handle_result(state)
@@ -39,17 +35,28 @@ defmodule Kora.Worker do
 				state.key
 				|> path
 				|> Kora.delete
-				{:stop, :shutdown, Map.put(state, :data, next)}
+				{:stop, :shutdown, state}
 			end
 
 			defp handle_result({input, next}, state) do
-				{input, Map.put(state, :data, next)}
+				state = save_state(state, next)
+				{input, state}
 			end
 
 			defp handle_result({input, msg, next}, state) do
-				{input, msg, Map.put(state, :data, next)}
+				state = save_state(state, next)
+				{input, msg, state}
 			end
 
+			defp save_state(state = %{data: old}, next) when next !== old do
+				state = Map.put(state, :data, next)
+				state.key
+				|> path
+				|> Kora.merge(state)
+				state
+			end
+
+			defp save_state(state, _next), do: state
 		end
 	end
 
@@ -64,13 +71,21 @@ defmodule Kora.Worker.Supervisor do
 	end
 
 	def init([module]) do
-		Supervisor.init([
+		result = Supervisor.init([
 			Supervisor.child_spec(module, restart: :transient, start: { module, :start_link, []})
 		], strategy: :simple_one_for_one)
+		Task.start_link(fn ->
+			resume(module)
+		end)
+		result
 	end
 
 	def start_child(module, key, args) do
 		Supervisor.start_child(module, [key, args])
+	end
+
+	def resume_child(module, state = %{key: key}) do
+		Supervisor.start_child(module, [state])
 	end
 
 	def resume(module) do
@@ -78,6 +93,12 @@ defmodule Kora.Worker.Supervisor do
 		|> Kora.query_path
 		|> Dynamic.default(%{})
 		|> Map.values
-		|> Enum.each(fn %{ "args" => args, "key" => key } -> start_child(module, key, args) end)
+		|> Enum.each(fn %{ "args" => args, "data" => data, "key" => key } ->
+			resume_child(module, %{
+				key: key,
+				args: args,
+				data: Dynamic.atom_keys(data),
+			})
+		end)
 	end
 end
