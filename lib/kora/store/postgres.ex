@@ -1,5 +1,4 @@
 defmodule Kora.Store.Postgres do
-	alias Kora.Store.Prefix
 	@table :kora_level_table
 	@delimiter "."
 

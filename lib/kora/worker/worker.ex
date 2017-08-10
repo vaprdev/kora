@@ -15,7 +15,6 @@ defmodule Kora.Worker do
 			end
 
 			def init([key, args]) do
-				IO.puts("NICE")
 				args
 				|> __MODULE__.first
 				|> handle_result(%{
@@ -74,9 +73,6 @@ defmodule Kora.Worker.Supervisor do
 		result = Supervisor.init([
 			Supervisor.child_spec(module, restart: :transient, start: { module, :start_link, []})
 		], strategy: :simple_one_for_one)
-		Task.start_link(fn ->
-			resume(module)
-		end)
 		result
 	end
 
@@ -84,7 +80,7 @@ defmodule Kora.Worker.Supervisor do
 		Supervisor.start_child(module, [key, args])
 	end
 
-	def resume_child(module, state = %{key: key}) do
+	def resume_child(module, state) do
 		Supervisor.start_child(module, [state])
 	end
 
