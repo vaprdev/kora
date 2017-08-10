@@ -5,6 +5,7 @@ defmodule Kora.Worker do
 			@before_compile Kora.Worker
 			use GenServer
 			alias Kora.UUID
+			alias Kora.Dynamic
 
 			def start_link(state), do: GenServer.start_link(__MODULE__, [state])
 			def start_link(key, args), do: GenServer.start_link(__MODULE__, [key, args])
@@ -49,10 +50,16 @@ defmodule Kora.Worker do
 			end
 
 			defp save_state(state = %{data: old}, next) when next !== old do
-				state = Map.put(state, :data, next)
+				state =
+					state
+					|> Map.put(:data)
 				state.key
 				|> path
-				|> Kora.merge(state)
+				|> Kora.merge(%{
+					"key" => state.key,
+					"args" => state.args,
+					"data" => Dynamic.string_keys(state.data)
+				})
 				state
 			end
 
