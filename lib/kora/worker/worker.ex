@@ -64,10 +64,6 @@ defmodule Kora.Worker.Supervisor do
 	end
 
 	def init([module]) do
-		Task.start_link(fn ->
-			:timer.sleep(1_000)
-			Kora.Worker.Supervisor.resume(module)
-		end)
 		Supervisor.init([
 			Supervisor.child_spec(module, restart: :transient, start: { module, :start_link, []})
 		], strategy: :simple_one_for_one)
@@ -80,7 +76,6 @@ defmodule Kora.Worker.Supervisor do
 	def resume(module) do
 		["kora:worker", inspect(module)]
 		|> Kora.query_path
-		|> IO.inspect
 		|> Dynamic.default(%{})
 		|> Map.values
 		|> Enum.each(fn %{ "args" => args, "key" => key } -> start_child(module, key, args) end)
