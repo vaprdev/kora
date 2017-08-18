@@ -3,7 +3,7 @@ defmodule Kora.Worker do
 	alias Kora.UUID
 	alias Kora.Dynamic
 
-	def start_link(state), do: GenServer.start_link(__MODULE__, [state])
+	def start_link(module, state), do: GenServer.start_link(__MODULE__, [module, state])
 	def start_link(module, key, args), do: GenServer.start_link(__MODULE__, [module, key, args], name: String.to_atom("#{inspect(module)}-#{key}"))
 
 	def init([module, state]) do
@@ -53,6 +53,7 @@ defmodule Kora.Worker do
 		state.key
 		|> path(state.module)
 		|> Kora.merge(%{
+			"module" => state.module,
 			"key" => state.key,
 			"args" => state.args,
 			"data" => Dynamic.string_keys(state.data)
