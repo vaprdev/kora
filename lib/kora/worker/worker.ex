@@ -6,21 +6,28 @@ defmodule Kora.Worker do
 	def start_link(module, state), do: GenServer.start_link(__MODULE__, [module, state])
 	def start_link(module, key, args), do: GenServer.start_link(__MODULE__, [module, key, args], name: String.to_atom("#{inspect(module)}-#{key}"))
 
-	def init([module, state]) do
-		state.data
-		|> module.resume
-		|> handle_result(state)
-	end
-
 	def init([module, key, args]) do
-		args
-		|> module.first
-		|> handle_result(%{
-			module: module,
-			key: key,
-			args: args,
-			data: %{},
-		})
+		case (path(key, module) ++ ["data"]) |> Kora.query_path do
+			nil ->
+				args
+				|> module.first
+				|> handle_result(%{
+					module: module,
+					key: key,
+					args: args,
+					data: %{},
+				})
+			data ->
+				data = Dynamic.atom_keys(data)
+				args
+				|> module.resume(data)
+				|> handle_result(%{
+					module: module,
+					key: key,
+					args: args,
+					data: data,
+				})
+		end
 	end
 
 	def handle_info(msg, state), do: msg |> state.module.handle_info(state.data) |> handle_result(state)
@@ -76,18 +83,10 @@ defmodule Kora.Worker do
 		|> Dynamic.default(%{})
 		|> Map.values
 		|> Enum.each(fn %{ "args" => args, "data" => data, "key" => key } ->
-			resume_child(module, %{
-				module: module,
-				key: key,
-				args: args,
-				data: Dynamic.atom_keys(data),
-			})
+			Supervisor.start_child(module, [module, key, args])
 		end)
 	end
 
-	def resume_child(module, state) do
-		Supervisor.start_child(module, [module, state])
-	end
 end
 
 defmodule Kora.Worker.Supervisor do
