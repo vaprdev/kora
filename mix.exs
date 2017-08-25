@@ -40,6 +40,9 @@ defmodule Kora.Mixfile do
 			{:cowboy, github: "ninenines/cowboy", ref: "2.0.0-pre.7", override: true, manager: :rebar3},
 			{:postgrex, "~> 0.13.3"},
 			{:poolboy, "~> 1.5"},
+			{:lager_logger, "~> 1.0"},
+			{:lasp, "~> 0.2.0"},
+			{:partisan, "~> 0.3.0"},
 		]
 	end
 end

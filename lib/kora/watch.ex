@@ -1,6 +1,5 @@
 defmodule Kora.Watch do
 	alias Kora.Mutation
-
 	def watch(key) do
 		Registry.register(__MODULE__, {:mutation, key}, 1)
 	end
@@ -36,5 +35,12 @@ defmodule Kora.Watch do
 			inflated = Mutation.inflate(path, value)
 			broadcast({:mutation, path}, inflated)
 		end)
+	end
+end
+
+
+defmodule Kora.Watch do
+	def watch(key) do
+		
 	end
 end
