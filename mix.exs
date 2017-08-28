@@ -43,6 +43,7 @@ defmodule Kora.Mixfile do
 			{:lager_logger, "~> 1.0"},
 			{:lasp, "~> 0.2.0"},
 			{:partisan, "~> 0.3.0"},
+			{:types, "~> 0.1.6"},
 		]
 	end
 end

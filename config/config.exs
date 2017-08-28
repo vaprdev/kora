@@ -45,3 +45,7 @@ config :lager, :crash_log, false
 
 # Use LagerLogger as lager's only handler.
 config :lager, :handlers, [{LagerLogger, [level: :none]}]
+
+config :partisan,
+	peer_ip: {0, 0, 0, 0},
+	peer_port: 14000

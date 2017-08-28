@@ -1,31 +1,31 @@
 defmodule Kora.Watch do
 	alias Kora.Mutation
-	def watch(key) do
-		Registry.register(__MODULE__, {:mutation, key}, 1)
+	def watch(path) do
+		sub({:mutation, path})
 	end
 
-	def members(key) do
+	def sub(group) do
+		Registry.register(__MODULE__, group, 1)
+	end
+
+	def members(group) do
 		__MODULE__
-		|> Registry.lookup(key)
+		|> Registry.lookup(group)
 		|> Enum.map(fn {key, _} -> key end)
 	end
 
-	def broadcast(key, data) do
-		parent = self()
-		[node() | Node.list]
-		|> Enum.map(&Node.spawn_link(&1, fn ->
-			Kora.Watch.broadcast_local(key, data)
-			send(parent, :ok)
-		end))
-		|> Enum.map(fn pid ->
+	def broadcast(group, msg) do
+		Kora.Receiver
+		|> Kora.Cluster.broadcast({:broadcast_local, self(), group, msg})
+		|> Enum.each(fn _ ->
 			receive do
-				:ok -> :ok
+				msg -> :done
 			end
 		end)
 	end
 
-	def broadcast_local(key, data) do
-		for pid <- members(key), do: send(pid, {:broadcast, key, data})
+	def broadcast_local(group, msg) do
+		for pid <- members(group), do: send(pid, {:broadcast, group, msg})
 	end
 
 	def broadcast_mutation(mutation) do
@@ -39,8 +39,21 @@ defmodule Kora.Watch do
 end
 
 
-defmodule Kora.Watch do
-	def watch(key) do
-		
+defmodule Kora.Receiver do
+	use GenServer
+
+	def start_link, do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
+
+	def init(_) do
+		{:ok, {}}
 	end
+
+	def handle_cast({:broadcast_local, from, group, msg}, state) do
+		Task.start_link(fn ->
+			Kora.Watch.broadcast_local(group, msg)
+			:partisan_peer_service.forward_message(node(from), from, :ok)
+		end)
+		{:noreply, state}
+	end
+
 end

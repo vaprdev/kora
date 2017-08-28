@@ -12,4 +12,5 @@ defmodule Kora.Config do
 			Kora.Command.Template | custom
 		]
 	end
+	def discovery(), do: Application.get_env(:kora, :discovery) || Kora.Discovery.Default
 end
