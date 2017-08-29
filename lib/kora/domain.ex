@@ -8,7 +8,11 @@ defmodule Kora.Domain do
 			path
 			|> Stream.drop(count + 1)
 			|> Enum.to_list
+
 		quote do
+			@doc """
+			Fetches #{Enum.join(unquote(direct), ".")}
+			"""
 			def unquote(name)(key) when is_binary(key) do
 				var!(key) = key
 				Kora.query_path(unquote(path))
@@ -25,4 +29,5 @@ defmodule Kora.Domain.Test do
 	import Kora.Domain
 
 	get :name, ["user:info", key, "name"]
+
 end
