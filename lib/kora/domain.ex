@@ -6,29 +6,29 @@ defmodule Kora.Domain do
 		end
 	end
 
-	defmacro schema(prefix, body) do
-		quote do
-			@prefix unquote(prefix)
-			unquote(body)
-		end
-	end
+	# defmacro schema(prefix, body) do
+	# 	quote do
+	# 		@prefix unquote(prefix)
+	# 		unquote(body)
+	# 	end
+	# end
 
-	defmacro field(name, opts \\ []) do
-		direct =
-			path
-			|> Enum.reverse
-			|> Stream.take_while(&is_binary/1)
-			|> Enum.reverse
-		quote do
-			def unquote(name)(key) when is_binary(key) do
-				Kora.query_path([@prefix, key, Atom.to_string(unquote(name))])
-			end
+	# defmacro field(name, opts \\ []) do
+	# 	direct =
+	# 		path
+	# 		|> Enum.reverse
+	# 		|> Stream.take_while(&is_binary/1)
+	# 		|> Enum.reverse
+	# 	quote do
+	# 		def unquote(name)(key) when is_binary(key) do
+	# 			Kora.query_path([@prefix, key, Atom.to_string(unquote(name))])
+	# 		end
 
-			def unquote(name)(input) when is_map(input) do
-				Kora.Dynamic.get(input, direct)
-			end
-		end
-	end
+	# 		def unquote(name)(input) when is_map(input) do
+	# 			Kora.Dynamic.get(input, direct)
+	# 		end
+	# 	end
+	# end
 
 	defmacro get(name, path, callback) do
 		count =
@@ -60,9 +60,9 @@ end
 defmodule Kora.Domain.Test do
 	import Kora.Domain
 
-	schema "domain:info" do
-		field :test
-	end
+	# schema "domain:info" do
+	# 	field :test
+	# end
 
 
 end
