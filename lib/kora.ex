@@ -83,7 +83,7 @@ defmodule Kora do
 		interceptors = Config.interceptors()
 		case Interceptor.validate_read(interceptors, path, opts, user) do
 			nil ->
-				query_path(path, opts, user, true)
+				Interceptor.resolve(interceptors, path, user, opts) || query_path(path, opts, user, true)
 			result -> result
 		end
 	end
