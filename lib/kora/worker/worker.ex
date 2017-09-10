@@ -82,7 +82,7 @@ defmodule Kora.Worker do
 		|> Kora.query_path
 		|> Dynamic.default(%{})
 		|> Map.values
-		|> Enum.each(fn %{ "args" => args, "data" => data, "key" => key } ->
+		|> Enum.each(fn %{ "args" => args, "key" => key } ->
 			Supervisor.start_child(module, [module, key, args])
 		end)
 	end

@@ -30,7 +30,22 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :kora,
-	writes: [ {Kora.Store.Postgres, name: :postgres} ],
-	read: {Kora.Store.Postgres, name: :postgres},
+	writes: [ {Kora.Store.Memory, name: :postgres} ],
+	read: {Kora.Store.Memory, name: :postgres},
 	interceptors: [],
 	commands: []
+
+config :lager, :error_logger_redirect, false
+
+# Stop lager removing Logger's :error_logger handler
+config :lager, :error_logger_whitelist, [Logger.ErrorHandler]
+
+# Stop lager writing a crash log
+config :lager, :crash_log, false
+
+# Use LagerLogger as lager's only handler.
+config :lager, :handlers, [{LagerLogger, [level: :none]}]
+
+config :partisan,
+	peer_ip: {0, 0, 0, 0}
+	peer_port: 14000
