@@ -30,8 +30,8 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :kora,
-	writes: [ {Kora.Store.Postgres, name: :postgres} ],
-	read: {Kora.Store.Postgres, name: :postgres},
+	writes: [ {Kora.Store.Memory, name: :postgres} ],
+	read: {Kora.Store.Memory, name: :postgres},
 	interceptors: [],
 	commands: []
 
@@ -47,5 +47,5 @@ config :lager, :crash_log, false
 config :lager, :handlers, [{LagerLogger, [level: :none]}]
 
 config :partisan,
-	peer_ip: {0, 0, 0, 0},
+	peer_ip: {0, 0, 0, 0}
 	peer_port: 14000
