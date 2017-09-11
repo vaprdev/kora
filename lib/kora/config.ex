@@ -12,6 +12,7 @@ defmodule Kora.Config do
 			Kora.Command.Template | custom
 		]
 	end
+<<<<<<< HEAD
 
 	def load(opts) do
 		opts
@@ -20,4 +21,7 @@ defmodule Kora.Config do
 		end)
 	end
 
+=======
+	def discovery(), do: Application.get_env(:kora, :discovery) || Kora.Discovery.Default
+>>>>>>> 85e6a9505a3072374031941b443bacc2d6b22458
 end
