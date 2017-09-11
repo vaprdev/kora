@@ -6,16 +6,10 @@ defmodule Kora.Application do
         # Init all stores
 
 		children = [
-			supervisor(Registry, [:duplicate, Kora.Groups]),
-			worker(Kora.Cluster, []),
+			Kora.Swarm.Example.supervisor_spec()
 		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]
 		Supervisor.start_link(children, opts)
 	end
 
-	defp cluster do
-		mod = Kora.Config.discovery()
-		mod.discover()
-		mod.register(Kora.Cluster.myself())
-	end
 end

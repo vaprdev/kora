@@ -29,23 +29,20 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
+config :logger, level: :error
+
 config :kora,
 	writes: [ {Kora.Store.Memory, name: :postgres} ],
 	read: {Kora.Store.Memory, name: :postgres},
 	interceptors: [],
 	commands: []
 
-config :lager, :error_logger_redirect, false
-
-# Stop lager removing Logger's :error_logger handler
-config :lager, :error_logger_whitelist, [Logger.ErrorHandler]
-
-# Stop lager writing a crash log
-config :lager, :crash_log, false
-
-# Use LagerLogger as lager's only handler.
-config :lager, :handlers, [{LagerLogger, [level: :none]}]
-
-config :partisan,
-	peer_ip: {0, 0, 0, 0}
-	peer_port: 14000
+config :libcluster,
+	topologies: [
+	  default: [
+		# The selected clustering strategy. Required.
+		strategy: Cluster.Strategy.Epmd,
+		# Configuration for the provided strategy. Optional.
+		config: [hosts: [:"a@127.0.0.1", :"b@127.0.0.1"]],
+	  ]
+	]
