@@ -9,7 +9,8 @@ defmodule Kora do
 
 	@master "kora-master"
 
-	def init do
+	def init(opts) do
+		Config.load(opts)
 		[ Config.read() | Config.writes() ]
 		|> MapSet.new
 		|> Enum.each(fn {store, arg} -> store.init(arg) end)
