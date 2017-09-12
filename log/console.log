@@ -1,0 +1,38 @@
+2017-09-11 21:40:33.400 [error] <0.473.0> Supervisor 'Elixir.Logger.Supervisor' had child 'Elixir.Logger.ErrorHandler' started with 'Elixir.Logger.Watcher':start_link({error_logger,'Elixir.Logger.ErrorHandler',{true,false,500}}) at <0.478.0> exit with reason normal in context child_terminated
+2017-09-11 21:40:33.417 [info] <0.33.0> Application lager started on node nonode@nohost
+2017-09-11 21:40:33.417 [info] <0.33.0> Application lager_logger started on node nonode@nohost
+2017-09-11 21:40:33.419 [info] <0.33.0> Application time_compat started on node nonode@nohost
+2017-09-11 21:40:33.420 [info] <0.33.0> Application rand_compat started on node nonode@nohost
+2017-09-11 21:40:33.421 [info] <0.33.0> Application acceptor_pool started on node nonode@nohost
+2017-09-11 21:40:33.460 [info] <0.33.0> Application partisan started on node nonode@nohost
+2017-09-11 21:40:33.462 [info] <0.33.0> Application gen_flow started on node nonode@nohost
+2017-09-11 21:40:33.472 [info] <0.33.0> Application sasl started on node nonode@nohost
+2017-09-11 21:40:33.482 [info] <0.33.0> Application os_mon started on node nonode@nohost
+2017-09-11 21:40:33.482 [info] <0.33.0> Application lasp_support started on node nonode@nohost
+2017-09-11 21:40:33.490 [info] <0.33.0> Application plumtree started on node nonode@nohost
+2017-09-11 21:40:33.491 [info] <0.602.0>@lasp_sup:configure_defaults:219 Setting jitter: false
+2017-09-11 21:40:33.493 [info] <0.602.0>@lasp_sup:configure_defaults:224 Setting tutorial: false
+2017-09-11 21:40:33.494 [info] <0.602.0>@lasp_sup:configure_defaults:229 Setting event interval: 0
+2017-09-11 21:40:33.495 [info] <0.602.0>@lasp_sup:configure_defaults:234 Setting max events: 1000
+2017-09-11 21:40:33.496 [info] <0.602.0>@lasp_sup:configure_defaults:239 Setting extended logging: false
+2017-09-11 21:40:33.497 [info] <0.602.0>@lasp_sup:configure_defaults:244 Setting mailbox logging: false
+2017-09-11 21:40:33.497 [info] <0.602.0>@lasp_sup:configure_defaults:249 Setting operation mode: state_based
+2017-09-11 21:40:33.498 [info] <0.602.0>@lasp_sup:configure_defaults:254 Setting set type: orset
+2017-09-11 21:40:33.500 [info] <0.602.0>@lasp_sup:configure_defaults:267 Setting broadcast: false
+2017-09-11 21:40:33.514 [info] <0.602.0>@lasp_sup:init:88 Membership: false
+2017-09-11 21:40:33.515 [info] <0.602.0>@lasp_sup:init:106 Workflow: false
+2017-09-11 21:40:33.518 [info] <0.602.0>@lasp_sup:advertisement_counter_child_specs:384 AdClientEnabled: false
+2017-09-11 21:40:33.520 [info] <0.602.0>@lasp_sup:advertisement_counter_child_specs:417 AdServerEnabled: false
+2017-09-11 21:40:33.520 [info] <0.602.0>@lasp_sup:game_tournament_child_specs:447 TournClientEnabled: false
+2017-09-11 21:40:33.521 [info] <0.602.0>@lasp_sup:game_tournament_child_specs:466 TournServerEnabled: false
+2017-09-11 21:40:33.522 [info] <0.602.0>@lasp_sup:throughput_child_specs:489 ThroughputType: gset
+2017-09-11 21:40:33.523 [info] <0.602.0>@lasp_sup:throughput_child_specs:497 ThroughputClientEnabled: false
+2017-09-11 21:40:33.523 [info] <0.602.0>@lasp_sup:throughput_child_specs:516 ThroughputServerEnabled: false
+2017-09-11 21:40:33.524 [info] <0.602.0>@lasp_sup:divergence_child_specs:539 DivergenceType: gcounter
+2017-09-11 21:40:33.525 [info] <0.602.0>@lasp_sup:divergence_child_specs:547 DivergenceClientEnabled: false
+2017-09-11 21:40:33.526 [info] <0.602.0>@lasp_sup:divergence_child_specs:566 DivergenceServerEnabled: false
+2017-09-11 21:40:33.538 [info] <0.33.0> Application lasp started on node nonode@nohost
+2017-09-11 21:40:33.542 [info] <0.33.0> Application connection started on node nonode@nohost
+2017-09-11 21:40:33.546 [info] <0.33.0> Application db_connection started on node nonode@nohost
+2017-09-11 21:40:33.547 [info] <0.33.0> Application decimal started on node nonode@nohost
+2017-09-11 21:40:34.155 [warning] <0.32.0> lager_error_logger_h dropped 3 messages in the last second that exceeded the limit of 50 messages/sec

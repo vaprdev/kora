@@ -12,5 +12,12 @@ defmodule Kora.Config do
 			Kora.Command.Template | custom
 		]
 	end
-	def discovery(), do: Application.get_env(:kora, :discovery) || Kora.Discovery.Default
+
+	def load(opts) do
+		opts
+		|> Enum.each(fn {key, value} ->
+			Application.put_env(:kora, key, value)
+		end)
+	end
+
 end

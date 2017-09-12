@@ -6,7 +6,7 @@ defmodule Kora.Application do
         # Init all stores
 
 		children = [
-			Kora.Swarm.Example.supervisor_spec()
+			worker(Registry, [[keys: :duplicate, name: Kora.Group]])
 		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]
 		Supervisor.start_link(children, opts)

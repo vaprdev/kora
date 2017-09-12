@@ -1,7 +1,15 @@
 defmodule Kora.Group do
-	def subscribe(group), do: Swarm.join({__MODULE__, group}, self())
+	def subscribe(group), do: Registry.register(Kora.Group, group, self())
 
-	def broadcast(group, msg), do: Swarm.publish({__MODULE__, group}, {:broadcast, group, msg})
+	def broadcast(group, msg) do
+		group
+		|> members
+		|> Enum.each(&send(&1, {:broadcast, group, msg}))
+	end
 
-	def members(group), do: Swarm.members({__MODULE__, group})
+	def members(group) do
+		Kora.Group
+		|> Registry.lookup(group)
+		|> Enum.map(fn {key, _value} -> key end)
+	end
 end
