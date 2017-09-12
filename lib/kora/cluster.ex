@@ -1,5 +1,7 @@
 defmodule Kora.Group do
-	def subscribe(group), do: Registry.register(Kora.Group, group, self())
+	def subscribe(group) do
+		Registry.register(Kora.Group, group, self())
+	end
 
 	def broadcast(group, msg) do
 		group
