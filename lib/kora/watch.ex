@@ -9,7 +9,7 @@ defmodule Kora.Watch do
 		|> Mutation.layers
 		|> Enum.each(fn {path, value} ->
 			inflated = Mutation.inflate(path, value)
-			Kora.Cluster.broadcast({:mutation, path}, inflated)
+			Kora.Group.broadcast({:mutation, path}, inflated)
 		end)
 	end
 end
