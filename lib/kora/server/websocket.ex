@@ -4,6 +4,7 @@ defmodule Kora.Websocket do
 	def init(req, _state) do
 		{:cowboy_websocket, req, %{
 			data: %{},
+			req: req,
 		}}
 	end
 
@@ -18,9 +19,8 @@ defmodule Kora.Websocket do
 			"body" => body,
 			"version" => version,
 		} = Poison.decode!(content)
-
 			
-		case Kora.Command.handle(action, body, version, {:websocket, self()}, state.data) do
+		case Kora.Command.handle(action, body, version, {:websocket, state.req, self()}, state.data) do
 			{:noreply, data} -> {:ok, %{ state | data: data}}
 			{result, data} ->
 				result = Map.put(result, :key, key)
@@ -39,7 +39,7 @@ defmodule Kora.Websocket do
 	end
 
 	def websocket_info(msg, state) do
-		case Kora.Command.trigger_info(msg, {:websocket, self()}, state.data) do
+		case Kora.Command.trigger_info(msg, {:websocket, state.req, self()}, state.data) do
 			{:noreply, data} ->
 				{:ok, %{
 					state |
