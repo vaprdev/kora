@@ -1,7 +1,9 @@
 defmodule Kora.Watch do
 	alias Kora.Mutation
-	def watch(path) do
-		Kora.Group.subscribe({:mutation, path})
+
+	def watch(path), do: watch(path, self())
+	def watch(path, pid) do
+		Kora.Group.subscribe({:mutation, path}, pid)
 	end
 
 	def broadcast_mutation(mutation) do

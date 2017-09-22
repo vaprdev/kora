@@ -48,8 +48,10 @@ defmodule Kora do
 			|> Task.async_stream(&Store.write(&1, prepared))
 			|> Stream.run
 
-			Interceptor.commit(interceptors, prepared, user)
-			{:ok, prepared}
+			case Interceptor.commit(interceptors, prepared, user) do
+				nil -> {:ok, prepared}
+				result -> result
+			end
 		end
 	end
 

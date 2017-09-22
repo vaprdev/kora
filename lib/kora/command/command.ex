@@ -1,5 +1,6 @@
 defmodule Kora.Command do
 	alias Kora.UUID
+	require Logger
 
 	def handle(action, body, version, source, state) do
 		case trigger_command({action, body, version}, source, state) do
@@ -28,9 +29,15 @@ defmodule Kora.Command do
 		try do
 			module.handle_command(command, source, state)
 		rescue
-			e -> { :error, inspect(e), state}
+			e ->
+				Exception.format(:error, e)
+				|> Logger.error
+				{ :error, inspect(e), state}
 		catch
-			_, e -> { :error, inspect(e), state}
+			_, e ->
+				Exception.format(:throw, e)
+				|> Logger.error
+				{ :error, inspect(e), state}
 		end
 	end
 
