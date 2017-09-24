@@ -62,7 +62,7 @@ defmodule Kora do
 				|> Query.flatten
 				|> Task.async_stream(fn {path, opts} ->
 					{ path, opts, query_path(path, opts, user, true) } 
-				end)
+				end, max_concurrency: 100)
 				|> Stream.map(fn {:ok, value} -> value end)
 				|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
 					collect
