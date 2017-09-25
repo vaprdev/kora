@@ -33,7 +33,6 @@ defmodule Kora.Store.Postgres do
 	def merge([name: name], layers) do
 		{_, statement, params} =
 			layers
-			|> IO.inspect
 			|> Enum.reduce({1, [], []}, fn {path, value}, {index, statement, params} ->
 				{
 					index + 2,
