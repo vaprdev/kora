@@ -33,6 +33,7 @@ defmodule Kora.Store.Postgres do
 	def merge([name: name], layers) do
 		{_, statement, params} =
 			layers
+			|> IO.inspect
 			|> Enum.reduce({1, [], []}, fn {path, value}, {index, statement, params} ->
 				{
 					index + 2,
@@ -50,7 +51,8 @@ defmodule Kora.Store.Postgres do
 			paths
 			|> Enum.with_index
 			|> Enum.map(fn {item ,index} -> "path <@ $#{index + 1}" end)
-			|> Enum.join("OR")
+			|> Enum.join(" OR ")
+			|> IO.inspect
 		name
 		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
 			paths
