@@ -16,7 +16,7 @@ defmodule Kora.Store.Postgres do
 
 	def query_path([name: name], path, opts) do
 		joined = label(path)
-		{:ok, stream} =
+		{:ok, result} =
 			name
 			|> Postgrex.transaction(fn conn ->
 				conn
@@ -33,7 +33,7 @@ defmodule Kora.Store.Postgres do
 				end)
 				|> Enum.to_list
 			end, pool: DBConnection.Poolboy)
-		stream
+		result
 	end
 
 	def merge(config, []), do: nil
