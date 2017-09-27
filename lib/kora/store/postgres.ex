@@ -24,7 +24,7 @@ defmodule Kora.Store.Postgres do
 					SELECT path, value
 					FROM kora
 					WHERE path <@ $1
-				""", [joined],  max_rows: 1)
+				""", [joined])
 				|> Stream.map(&Map.get(&1, :rows))
 				|> Stream.flat_map(&(&1))
 				|> Stream.map(fn [path, value] ->
@@ -46,9 +46,12 @@ defmodule Kora.Store.Postgres do
 					["($#{index}, $#{index + 1})" | statement],
 					[label(path), value | params],
 				}
-		end)
-		name
-		|> Postgrex.query!("INSERT INTO kora(path, value) VALUES #{Enum.join(statement, ", ")} ON CONFLICT (path) DO UPDATE SET value = excluded.value", params)
+			end)
+		{:ok, result} =
+			name
+			|> Postgrex.transaction(fn conn ->
+				Postgrex.query!(conn, "INSERT INTO kora(path, value) VALUES #{Enum.join(statement, ", ")} ON CONFLICT (path) DO UPDATE SET value = excluded.value", params)
+			end, pool: DBConnection.Poolboy)
 	end
 
 	def delete(config, []), do: nil
@@ -59,10 +62,13 @@ defmodule Kora.Store.Postgres do
 			|> Enum.map(fn {item ,index} -> "path <@ $#{index + 1}" end)
 			|> Enum.join(" OR ")
 		name
-		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
-			paths
-			|> Enum.map(&label(&1))
-		)
+		|> Postgrex.transaction(fn conn ->
+			conn
+			|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
+				paths
+				|> Enum.map(&label(&1))
+			)
+		end, pool: DBConnection.Poolboy)
 	end
 
 	def child_spec(opts) do
