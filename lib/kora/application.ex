@@ -6,9 +6,10 @@ defmodule Kora.Application do
         # Init all stores
 
 		children = [
-			supervisor(Registry, [:duplicate, Kora.Watch]),
+			worker(Registry, [[keys: :duplicate, name: Kora.Group]])
 		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]
 		Supervisor.start_link(children, opts)
 	end
+
 end

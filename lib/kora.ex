@@ -9,7 +9,8 @@ defmodule Kora do
 
 	@master "kora-master"
 
-	def init do
+	def init(opts) do
+		Config.load(opts)
 		[ Config.read() | Config.writes() ]
 		|> MapSet.new
 		|> Enum.each(fn {store, arg} -> store.init(arg) end)
@@ -47,8 +48,10 @@ defmodule Kora do
 			|> Task.async_stream(&Store.write(&1, prepared))
 			|> Stream.run
 
-			Interceptor.commit(interceptors, prepared, user)
-			{:ok, prepared}
+			case Interceptor.commit(interceptors, prepared, user) do
+				nil -> {:ok, prepared}
+				result -> result
+			end
 		end
 	end
 
@@ -59,7 +62,7 @@ defmodule Kora do
 				|> Query.flatten
 				|> Task.async_stream(fn {path, opts} ->
 					{ path, opts, query_path(path, opts, user, true) } 
-				end)
+				end, max_concurrency: 100)
 				|> Stream.map(fn {:ok, value} -> value end)
 				|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
 					collect

@@ -57,7 +57,7 @@ defmodule Kora.Store.Postgres do
 			paths
 			|> Enum.with_index
 			|> Enum.map(fn {item ,index} -> "path <@ $#{index + 1}" end)
-			|> Enum.join("OR")
+			|> Enum.join(" OR ")
 		name
 		|> Postgrex.query!("DELETE FROM kora WHERE #{statement}",
 			paths
