@@ -8,7 +8,10 @@ defmodule Kora.Mutation do
 		}
 	end
 
+	def merge(path, value), do: new |> merge(path, value)
 	def merge(input, path, value), do: Dynamic.put(input, [:merge | path], value)
+
+	def delete(path), do: new |> delete(path)
 	def delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
 
 	def layers(%{merge: merge, delete: delete}) do

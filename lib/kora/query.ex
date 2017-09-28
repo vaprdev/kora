@@ -1,6 +1,14 @@
 defmodule Kora.Query do
 	alias Kora.Dynamic
 
+	def new(), do: %{}
+
+	def get(path, opts), do: new |> get(path, opts)
+	def get(query, path, opts) do
+		query
+		|> Dynamic.put(path, opts)
+	end
+
 	def layers(query) do
 		query
 		|> Dynamic.layers

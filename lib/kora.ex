@@ -36,41 +36,55 @@ defmodule Kora do
 		|> mutation(user)
 	end
 
-	def mutation(mut, user \\ @master) do
+	def mutation(mut), do: mutation(mut, @master)
+	def mutation(mut, @master), do: mutation(mut, @master, :validated)
+	def mutation(mut, user) do
+		Config.interceptors()
+		|> Interceptor.validate_mutation(mut, user)
+		|> case do
+			:ok -> mutation(mut, user, :validated)
+			result -> result
+		end
+	end
+	defp mutation(mut, user, :validated) do
 		interceptors = Config.interceptors()
 		with _ <- 1,
-			nil <- Interceptor.validate_write(interceptors, mut, user),
-			prepared = %{merge: merge, delete: delete} <- Interceptor.prepare(interceptors, mut, user)
+			{:ok, prepared} <- Interceptor.before_mutation(interceptors, mut, user),
+			:ok <- Kora.Watch.broadcast_mutation(prepared),
+			_ <-
+				Config.writes()
+				|> Task.async_stream(&Store.write(&1, prepared))
+				|> Stream.run,
+			:ok <- Interceptor.after_mutation(interceptors, prepared, user)
 		do
-			Kora.Watch.broadcast_mutation(prepared)
-
-			Config.writes()
-			|> Task.async_stream(&Store.write(&1, prepared))
-			|> Stream.run
-
-			case Interceptor.commit(interceptors, prepared, user) do
-				nil -> {:ok, prepared}
-				result -> result
-			end
+			{:ok, prepared}
 		end
 	end
 
-	def query(query, user \\ @master) do
-		case Interceptor.validate_read(Config.interceptors(), query, user) do
-			nil ->
-				query
-				|> Query.flatten
-				|> Task.async_stream(fn {path, opts} ->
-					{ path, opts, query_path(path, opts, user, true) } 
-				end, max_concurrency: 100)
-				|> Stream.map(fn {:ok, value} -> value end)
-				|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
-					collect
-					|> Mutation.merge(path, data)
-					|> delete(path, opts)
-				end)
+	def query(query), do: query(query, @master)
+	def query(query, @master), do: query(query, @master, :validated)
+	def query(query, user) do
+		Config.interceptors()
+		|> Interceptor.validate_query(query, user)
+		|> case do
+			:ok -> query(query, user, :validated)
 			result -> result
 		end
+	end
+	def query(query, user, :validated) do
+		result =
+			query
+			|> Query.flatten
+			|> Task.async_stream(fn {path, opts} ->
+				{ path, opts, query_path(path, opts, user, :validated) } 
+			end, max_concurrency: 100)
+			|> Stream.map(fn {:ok, value} -> value end)
+			|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
+				collect
+				|> Mutation.merge(path, data)
+				|> delete(path, opts)
+			end)
+		{:ok, result}
 	end
 
 	defp delete(mutation, path, opts) do
@@ -82,20 +96,31 @@ defmodule Kora do
 		end
 	end
 
+	def query_path!(path, opts \\ %{}, user \\ @master) do
+		{:ok, result} = query_path(path, opts, user)
+		result
+	end
+
 	def query_path(path, opts \\ %{}, user \\ @master) do
-		interceptors = Config.interceptors()
-		case Interceptor.validate_read(interceptors, path, opts, user) do
-			nil ->
-				Interceptor.resolve(interceptors, path, user, opts) || query_path(path, opts, user, true)
+		path
+		|> Query.get(opts)
+		|> query(user)
+		|> case do
+			{:ok, %{merge: merge}} ->
+				IO.inspect(merge)
+				{:ok, Dynamic.get(merge, path)}
 			result -> result
 		end
 	end
 
-	defp query_path(path, opts, user, true) do
-		case Interceptor.resolve(Config.interceptors(), path, user, opts) do
-			nil -> 
+	defp query_path(path, opts, user, :validated) do
+		Config.interceptors()
+		|> Interceptor.resolve_path(path, opts, user)
+		|> case do
+			nil ->
 				Config.read()
 				|> Store.query_path(path, opts)
+				|> IO.inspect
 			result -> result
 		end
 	end
