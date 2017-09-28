@@ -82,18 +82,12 @@ defmodule Kora do
 			|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
 				collect
 				|> Mutation.merge(path, data)
-				|> delete(path, opts)
+				|> case do
+					result when opts === %{} -> Mutation.delete(result, path)
+					result -> result
+				end
 			end)
 		{:ok, result}
-	end
-
-	defp delete(mutation, path, opts) do
-		cond do
-			opts === %{} ->
-				mutation
-				|> Mutation.delete(path)
-			true -> mutation
-		end
 	end
 
 	def query_path!(path, opts \\ %{}, user \\ @master) do
