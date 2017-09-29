@@ -32,8 +32,8 @@ use Mix.Config
 config :logger, level: :error
 
 config :kora,
-	writes: [ {Kora.Store.Memory, name: :postgres} ],
-	read: {Kora.Store.Memory, name: :postgres},
+	writes: [ {Kora.Store.Level, directory: "kora.db" } ],
+	read: {Kora.Store.Level, directory: "kora.db"},
 	interceptors: [],
 	commands: []
 

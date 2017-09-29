@@ -101,7 +101,6 @@ defmodule Kora do
 		|> query(user)
 		|> case do
 			{:ok, %{merge: merge}} ->
-				IO.inspect(merge)
 				{:ok, Dynamic.get(merge, path)}
 			result -> result
 		end
@@ -114,7 +113,6 @@ defmodule Kora do
 			nil ->
 				Config.read()
 				|> Store.query_path(path, opts)
-				|> IO.inspect
 			result -> result
 		end
 	end
