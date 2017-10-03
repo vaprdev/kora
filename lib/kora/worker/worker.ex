@@ -1,6 +1,5 @@
 defmodule Kora.Worker do
 	use GenServer
-	alias Kora.UUID
 	alias Kora.Dynamic
 
 	def start_link(module, state), do: GenServer.start_link(__MODULE__, [module, state])
@@ -36,7 +35,7 @@ defmodule Kora.Worker do
 
 	def path(key, module), do: ["kora:worker", inspect(module), key]
 
-	defp handle_result({:stop, :shutdown, next}, state) do
+	defp handle_result({:stop, :shutdown, _next}, state) do
 		state.key
 		|> path(state.module)
 		|> Kora.delete
@@ -91,7 +90,6 @@ end
 
 defmodule Kora.Worker.Supervisor do
 	use Supervisor
-	alias Kora.Dynamic
 
 	def start_link(module) do
 		Supervisor.start_link(__MODULE__, [], name: module)

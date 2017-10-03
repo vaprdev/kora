@@ -8,7 +8,7 @@ defmodule Kora.Command.Mutation do
 		end
 	end
 
-	def handle_command(cmd = {"kora.mutation", mutation, _v}, from, state) do
+	def handle_command(cmd = {"kora.mutation", _mutation, _v}, from, state) do
 		handle_command(cmd, from, Map.put(state, :user, "anonymous"))
 	end
 

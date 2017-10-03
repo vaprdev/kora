@@ -8,7 +8,7 @@ defmodule Kora.Command.Query do
 		end
 	end
 
-	def handle_command(cmd = {"kora.query", query, _v}, from, state) do
+	def handle_command(cmd = {"kora.query", _query, _v}, from, state) do
 		handle_command(cmd, from, Map.put(state, :user, "anonymous"))
 	end
 

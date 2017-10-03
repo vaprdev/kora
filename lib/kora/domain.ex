@@ -56,13 +56,3 @@ defmodule Kora.Domain do
 		end
 	end
 end
-
-defmodule Kora.Domain.Test do
-	import Kora.Domain
-
-	# schema "domain:info" do
-	# 	field :test
-	# end
-
-
-end

@@ -3,6 +3,7 @@ defmodule Kora.Interceptor do
 	alias Kora.Query
 	require IEx
 
+
 	def resolve_path(interceptors, path, opts, user) do
 		{path, opts}
 		|> trigger_layer(interceptors, :resolve_path, [user])
@@ -49,7 +50,7 @@ defmodule Kora.Interceptor do
 		|> Stream.flat_map(&trigger_layer(&1, interceptors, fun, args))
 	end
 
-	defp trigger_layer(layer = {path, data}, interceptors, fun, args) do
+	defp trigger_layer({path, data}, interceptors, fun, args) do
 		interceptors
 		|> Stream.map(fn i -> apply(i, fun, [path, data | args]) end)
 	end
@@ -65,8 +66,17 @@ defmodule Kora.Interceptor do
 		|> Enum.at(0)
 	end
 
+	@type mutation :: %{required(:merge) => map, required(:delete) => map}
+
+	@callback resolve_path(path :: list(String.t), opts :: map, user :: String.t) :: {:ok, any} | {:error, term}
+	@callback validate_query(path :: list(String.t), opts :: map, query :: map, user :: String.t) :: :ok | {:error, term}
+	@callback validate_mutation(path :: list(String.t), layer :: mutation, mut :: mutation, user :: String.t) :: :ok | {:error, term}
+	@callback before_mutation(path :: list(String.t), layer :: mutation, mut :: mutation, user :: String.t) :: :ok | {:error, term} | {:combine, mutation}
+	@callback after_mutation(path :: list(String.t), layer :: mutation, mut :: mutation, user :: String.t) :: :ok | {:error, term}
+
 	defmacro __using__(_opts) do
 		quote do
+			@behaviour Kora.Interceptor
 			@before_compile Kora.Interceptor
 		end
 	end
@@ -77,11 +87,11 @@ defmodule Kora.Interceptor do
 				:ok
 			end
 
-			def resolve_path(_path, _layer, _user) do
+			def resolve_path(_path, _opts, _user) do
 				nil
 			end
 
-			def validate_query(_path, _layer, _query, _user) do
+			def validate_query(_path, _opts, _query, _user) do
 				:ok
 			end
 

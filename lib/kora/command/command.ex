@@ -48,7 +48,7 @@ defmodule Kora.Command do
 			|> Stream.filter(&(&1 !== nil))
 			|> Enum.at(0) || {:noreply, state}
 		case result do
-			{:noreply, state} -> result
+			{:noreply, _} -> result
 			{action, body, data} ->
 				{
 					%{

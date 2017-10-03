@@ -1,5 +1,5 @@
 defmodule Kora.Swarm do
-	defmacro __using__(opts) do
+	defmacro __using__(_opts) do
 		quote do
 			use GenServer
 
@@ -58,14 +58,14 @@ defmodule Kora.Swarm.Supervisor do
 	end
 
 	def start_child(module, args) do
-		{:ok, pid} = Supervisor.start_child(module, [args])
+		{:ok, _} = Supervisor.start_child(module, [args])
 	end
 end
 
 defmodule Kora.Swarm.Example do
 	use Kora.Swarm
 
-	def init(args) do
+	def init(_args) do
 		{:ok, {}}
 	end
 end

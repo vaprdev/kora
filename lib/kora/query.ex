@@ -3,7 +3,7 @@ defmodule Kora.Query do
 
 	def new(), do: %{}
 
-	def get(path, opts), do: new |> get(path, opts)
+	def get(path, opts), do: new() |> get(path, opts)
 	def get(query, path, opts) do
 		query
 		|> Dynamic.put(path, opts)
