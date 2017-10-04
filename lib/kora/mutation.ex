@@ -15,10 +15,9 @@ defmodule Kora.Mutation do
 	def delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
 
 	def layers(%{merge: merge, delete: delete}) do
-		Dynamic.combine(
-			layers(merge, :merge),
-			layers(delete, :delete)
-		)
+		merge
+		|> layers(:merge)
+		|> Dynamic.combine(layers(delete, :delete))
 		|> Stream.map(fn {path, value} ->
 			merge = Map.get(value, :merge, %{})
 			delete = Map.get(value, :delete, %{})

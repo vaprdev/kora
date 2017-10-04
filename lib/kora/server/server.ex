@@ -24,6 +24,6 @@ defmodule Kora.Server do
 
 	def child_spec do
 		import Supervisor.Spec
-		worker(__MODULE__, [12000])
+		worker(__MODULE__, [12_000])
 	end
 end

@@ -23,8 +23,7 @@ defmodule Kora.Worker do
 				|> handle_result(%{
 					module: module,
 					key: key,
-					args: args,
-					data: data,
+					args: args, data: data,
 				})
 		end
 	end
@@ -81,7 +80,7 @@ defmodule Kora.Worker do
 		|> Kora.query_path
 		|> Dynamic.default(%{})
 		|> Map.values
-		|> Enum.each(fn %{ "args" => args, "key" => key } ->
+		|> Enum.each(fn %{"args" => args, "key" => key} ->
 			Supervisor.start_child(module, [module, key, args])
 		end)
 	end

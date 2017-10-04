@@ -21,7 +21,7 @@ defmodule Kora.Websocket do
 		} = Poison.decode!(content)
 			
 		case Kora.Command.handle(action, body, version, {:websocket, state.req, self()}, state.data) do
-			{:noreply, data} -> {:ok, %{ state | data: data}}
+			{:noreply, data} -> {:ok, %{state | data: data}}
 			{result, data} ->
 				result = Map.put(result, :key, key)
 				json = Poison.encode!(result)

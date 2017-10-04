@@ -94,23 +94,20 @@ defmodule Kora.Dynamic do
 		input
 		|> Enum.flat_map(fn {key, value} ->
 			full = [key | path]
-			cond do
-				is_map(value) -> flatten(value, full)
-				true -> [{Enum.reverse(full), value}]
-			end
+			if is_map(value), do: flatten(value, full), else: [{Enum.reverse(full), value}]
 		end)
 	end
 
 	def layers(input, path \\ []) do
-		cond do
-			is_map(input) ->
-				[
-					{Enum.reverse(path), input} |
-					Enum.flat_map(input, fn {key, value} ->
-						layers(value, [key | path])
-					end)
-				]
-			true -> []
+		if is_map(input) do
+			[
+				{Enum.reverse(path), input} |
+				Enum.flat_map(input, fn {key, value} ->
+					layers(value, [key | path])
+				end)
+			]
+		else
+			[]
 		end
 	end
 
