@@ -96,7 +96,7 @@ defmodule Kora.Worker.Supervisor do
 
 	def init(_) do
 		Supervisor.init([
-			Supervisor.child_spec(Kora.Worker, restart: :transient, start: { Kora.Worker, :start_link, []})
+			Supervisor.child_spec(Kora.Worker, restart: :transient, start: {Kora.Worker, :start_link, []})
 		], strategy: :simple_one_for_one)
 	end
 end

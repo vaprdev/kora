@@ -3,8 +3,6 @@ defmodule Kora.Application do
 
 	def start(_type, _args) do
 		import Supervisor.Spec, warn: false
-        # Init all stores
-
 		children = [
 			worker(Registry, [[keys: :duplicate, name: Kora.Group]])
 		]

@@ -11,7 +11,7 @@ defmodule Kora do
 
 	def init(opts) do
 		Config.load(opts)
-		[ Config.read() | Config.writes() ]
+		[Config.read() | Config.writes()]
 		|> MapSet.new
 		|> Enum.each(fn {store, arg} -> store.init(arg) end)
 	end
@@ -76,7 +76,7 @@ defmodule Kora do
 			query
 			|> Query.flatten
 			|> Task.async_stream(fn {path, opts} ->
-				{ path, opts, query_path(path, opts, user, :validated) } 
+				{path, opts, query_path(path, opts, user, :validated)} 
 			end, max_concurrency: 100)
 			|> Stream.map(fn {:ok, value} -> value end)
 			|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
@@ -134,5 +134,4 @@ defmodule Kora do
 		mut
 		|> Mutation.merge(name ++ [next] ++ prefix, :os.system_time(:millisecond))
 	end
-
 end
