@@ -68,7 +68,7 @@ defmodule Kora.Interceptor do
 
 	@type mutation :: %{required(:merge) => map, required(:delete) => map}
 
-	@callback resolve_path(path :: list(String.t), opts :: map, user :: String.t) :: {:ok, any} | {:error, term}
+	@callback resolve_path(path :: list(String.t), opts :: map, user :: String.t) :: {:ok, any} | {:error, term} | nil
 	@callback validate_query(path :: list(String.t), opts :: map, query :: map, user :: String.t) :: :ok | {:error, term}
 	@callback validate_mutation(path :: list(String.t), layer :: mutation, mut :: mutation, user :: String.t) :: :ok | {:error, term}
 	@callback before_mutation(path :: list(String.t), layer :: mutation, mut :: mutation, user :: String.t) :: :ok | {:error, term} | {:combine, mutation}
