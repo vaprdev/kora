@@ -111,7 +111,7 @@ defmodule Kora.Store.Postgres.LTree do
 	# for a longer period of time. See `:binary.copy/1` for more
 	# information.Postgrex.Types.define(MyApp.Types, [{MyApp.LTree, :copy}])
 
-	def init(opts) when opts in [:reference, :copy], do: opts
+	def init(opts) when opts === :copy or opts === :reference, do: opts
 
 	# Use this extension when `type` from %Postgrex.TypeInfo{} is "ltree"
 	def matching(_opts), do: [type: "ltree"]
