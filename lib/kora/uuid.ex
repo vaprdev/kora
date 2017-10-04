@@ -14,7 +14,8 @@ defmodule Kora.UUID do
 	def ascending_from(time, :uniform), do: generate(time, @forwards, ["0"])
 
 	def generate(time, range, random) do
-		generate(time, range, random, @total, [])
+		time
+		|> generate(range, random, @total, [])
 		|> Enum.join
 	end
 

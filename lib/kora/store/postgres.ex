@@ -59,7 +59,7 @@ defmodule Kora.Store.Postgres do
 		statement =
 			paths
 			|> Enum.with_index
-			|> Enum.map(fn {item ,index} -> "path <@ $#{index + 1}" end)
+			|> Enum.map(fn {item, index} -> "path <@ $#{index + 1}" end)
 			|> Enum.join(" OR ")
 		name
 		|> Postgrex.transaction(fn conn ->

@@ -26,7 +26,8 @@ defmodule Kora.Store.Memory do
 		layers
 		|> Enum.each(fn path ->
 			{min, max} = Prefix.range(path, @delimiter, %{})
-			iterate_keys(min, max)
+			min
+			|> iterate_keys(max)
 			|> Enum.each(fn path -> :ets.delete(@table, path) end)
 		end)
 	end
@@ -34,7 +35,8 @@ defmodule Kora.Store.Memory do
 	def query_path(_config, path, opts) do
 		{min, max} = Prefix.range(path, @delimiter, opts)
 
-		iterate_keys(min, max)
+		min
+		|> iterate_keys(max)
 		|> Stream.map(&:ets.lookup(@table, &1))
 		|> Stream.map(&List.first/1)
 		|> Stream.filter(fn item -> item !== nil end)

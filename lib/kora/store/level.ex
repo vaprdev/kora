@@ -54,14 +54,14 @@ defmodule Kora.Store.Level do
 	defp stream({:ok, iter}, min, max) do
 		Stream.resource(
 			fn -> {min, iter} end,
-			fn {op, iter}->
+			fn {op, iter} ->
 				case Exleveldb.iterator_move(iter, op) do
 					{:ok, path} when path > max -> {:halt, iter}
 					{:ok, path, _value} when path > max -> {:halt, iter}
 					{:error, :invalid_iterator} -> {:halt, iter}
 
 					{:ok, path} -> {[path], {:next, iter}}
-					{:ok, path, value}-> {[{path, value}], {:next, iter}}
+					{:ok, path, value} -> {[{path, value}], {:next, iter}}
 				end
 			end,
 			fn iter -> Exleveldb.iterator_close(iter) end

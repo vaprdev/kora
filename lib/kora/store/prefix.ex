@@ -40,10 +40,6 @@ defmodule Kora.Store.Prefix do
 		scan(input, Enum.count(input) - 1)
 	end
 
-	defp scan([head | tail], index) do
-		cond do
-			head < 255 -> index
-			true -> scan(tail, index - 1)
-		end
-	end
+	defp scan([head | tail], index) when head < 255, do: index
+	defp scan([head | tail], index), do: scan(tail, index - 1)
 end

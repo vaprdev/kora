@@ -32,7 +32,7 @@ defmodule Kora.Store do
 		|> Stream.chunk_by(fn {path, _value} -> Enum.at(path, count) end)
 		|> Stream.take(
 			case opts.limit do
-				0 -> 10000
+				0 -> 10_000
 				_ -> opts.limit
 			end
 		)

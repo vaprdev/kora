@@ -66,7 +66,6 @@ defmodule Kora.Swarm.Example do
 	use Kora.Swarm
 
 	def init(args) do
-		IO.inspect(args)
 		{:ok, {}}
 	end
 end

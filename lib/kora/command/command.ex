@@ -30,14 +30,16 @@ defmodule Kora.Command do
 			module.handle_command(command, source, state)
 		rescue
 			e ->
-				Exception.format(:error, e)
+				:error
+				|> Exception.format(e)
 				|> Logger.error
-				{ :error, inspect(e), state}
+				{:error, inspect(e), state}
 		catch
 			_, e ->
-				Exception.format(:throw, e)
+				:throw
+				|> Exception.format(e)
 				|> Logger.error
-				{ :error, inspect(e), state}
+				{:error, inspect(e), state}
 		end
 	end
 

@@ -10,11 +10,7 @@ defmodule Kora.Query do
 		query
 		|> Enum.flat_map(fn {key, value} ->
 			full = [key | path]
-			cond do
-				path?(value) ->
-					[{Enum.reverse(full), value}]
-				true -> flatten(value, full)
-			end
+			if path?(value), do: [{Enum.reverse(full), value}], else: flatten(value, full)
 		end)
 	end
 

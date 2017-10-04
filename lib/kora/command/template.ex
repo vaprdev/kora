@@ -31,7 +31,7 @@ defmodule Kora.Command.Template do
 
 		case Map.get(templates, {name, Enum.count(args)}) do
 			nil -> {:error, :invalid_template, state}
-			%{ action: action, template: template, version: version} ->
+			%{action: action, template: template, version: version} ->
 				body =
 					template
 					|> Dynamic.flatten

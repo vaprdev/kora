@@ -61,7 +61,7 @@ defmodule Kora do
 				query
 				|> Query.flatten
 				|> Task.async_stream(fn {path, opts} ->
-					{ path, opts, query_path(path, opts, user, true) } 
+					{path, opts, query_path(path, opts, user, true)}
 				end, max_concurrency: 100)
 				|> Stream.map(fn {:ok, value} -> value end)
 				|> Enum.reduce(Mutation.new, fn {path, opts, data}, collect ->
@@ -73,14 +73,8 @@ defmodule Kora do
 		end
 	end
 
-	defp delete(mutation, path, opts) do
-		cond do
-			opts === %{} ->
-				mutation
-				|> Mutation.delete(path)
-			true -> mutation
-		end
-	end
+	defp delete(mutation, path, opts) when opts === %{}, do: Mutation.delete(mutation, path)
+	defp delete(mutation, _path, _opts), do: mutation
 
 	def query_path(path, opts \\ %{}, user \\ @master) do
 		interceptors = Config.interceptors()
