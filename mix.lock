@@ -9,6 +9,7 @@
   "cuttlefish": {:git, "git://github.com/basho/cuttlefish.git", "b2ce0b15687f97259031f9f42e25ae52cdee3bab", [tag: "2.0.0"]},
   "db_connection": {:hex, :db_connection, "1.1.2", "2865c2a4bae0714e2213a0ce60a1b12d76a6efba0c51fbda59c9ab8d1accc7a8", [:mix], [{:connection, "~> 1.0.2", [hex: :connection, repo: "hexpm", optional: false]}, {:poolboy, "~> 1.5", [hex: :poolboy, repo: "hexpm", optional: true]}, {:sbroker, "~> 1.0", [hex: :sbroker, repo: "hexpm", optional: true]}], "hexpm"},
   "decimal": {:hex, :decimal, "1.4.0", "fac965ce71a46aab53d3a6ce45662806bdd708a4a95a65cde8a12eb0124a1333", [:mix], [], "hexpm"},
+  "dialyxir": {:hex, :dialyxir, "0.5.1", "b331b091720fd93e878137add264bac4f644e1ddae07a70bf7062c7862c4b952", [], [], "hexpm"},
   "druuid": {:hex, :druuid, "0.3.0", "fc537b609ff33f4ee651f8226acef14f200689a0a7d0a4b1d5cf4c463cd7124c", [:mix], []},
   "eleveldb": {:hex, :eleveldb, "2.2.20", "1fff63a5055bbf4bf821f797ef76065882b193f5e8095f95fcd9287187773b58", [:rebar3], [], "hexpm"},
   "erocksdb": {:hex, :erocksdb, "0.4.1", "59a3258b1460d0e64f7575d912d9af86fa5aa56729abff18e4d3e4fd4a5e01e0", [:rebar3], []},

@@ -1,6 +1,9 @@
 defmodule Kora.Mutation do
 	alias Kora.Dynamic
 
+	@type t :: %{merge: map, delete: map}
+
+	@spec new(map, map) :: t
 	def new(merge \\ %{}, delete \\ %{}) do
 		%{
 			merge: merge || %{},
@@ -8,10 +11,16 @@ defmodule Kora.Mutation do
 		}
 	end
 
+	@spec merge(list(String.t), any) :: t
 	def merge(path, value), do: new() |> merge(path, value)
+
+	@spec merge(t, list(String.t), any) :: t
 	def merge(input, path, value), do: Dynamic.put(input, [:merge | path], value)
 
+	@spec delete(list(String.t)) :: t
 	def delete(path), do: new() |> delete(path)
+
+	@spec delete(t, list(String.t)) :: t
 	def delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
 
 	def layers(%{merge: merge, delete: delete}) do

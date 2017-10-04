@@ -41,7 +41,10 @@ defmodule Kora.Mixfile do
 			{:types, "~> 0.1.6", override: true},
 			{:swarm, "~> 3.0"},
 			{:libcluster, "~> 2.1"},
+		
 			{:credo, "~> 0.8", only: [:dev, :test], runtime: false},
+			{:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+
 		]
 	end
 end

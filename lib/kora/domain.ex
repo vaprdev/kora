@@ -45,7 +45,7 @@ defmodule Kora.Domain do
 			"""
 			def unquote(name)(key) when is_binary(key) do
 				var!(key) = key
-				value = Kora.query_path(unquote(path))
+				value = Kora.query_path!(unquote(path))
 				unquote(callback).(value)
 			end
 

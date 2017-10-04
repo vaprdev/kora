@@ -77,7 +77,7 @@ defmodule Kora.Worker do
 
 	def resume(module) do
 		["kora:worker", inspect(module)]
-		|> Kora.query_path
+		|> Kora.query_path!
 		|> Dynamic.default(%{})
 		|> Map.values
 		|> Enum.each(fn %{"args" => args, "key" => key} ->

@@ -1,6 +1,5 @@
 defmodule Kora.Dynamic do
 
-
 	def get(input, [], fallback, compare) do
 		input
 		|> default(fallback, compare)
