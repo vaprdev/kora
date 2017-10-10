@@ -1,5 +1,4 @@
 defmodule Kora.Store.Postgres do
-	@table :kora_level_table
 	@delimiter "."
 
 	def init(name: name) do
@@ -14,7 +13,7 @@ defmodule Kora.Store.Postgres do
 		""", [], pool: DBConnection.Poolboy)
 	end
 
-	def query_path([name: name], path, opts) do
+	def query_path([name: name], path, _opts) do
 		joined = label(path)
 		{:ok, result} =
 			name
@@ -36,7 +35,7 @@ defmodule Kora.Store.Postgres do
 		result
 	end
 
-	def merge(config, []), do: nil
+	def merge(_config, []), do: nil
 	def merge([name: name], layers) do
 		{_, statement, params} =
 			layers
@@ -47,19 +46,19 @@ defmodule Kora.Store.Postgres do
 					[label(path), value | params],
 				}
 			end)
-		{:ok, result} =
+		{:ok, _} =
 			name
 			|> Postgrex.transaction(fn conn ->
 				Postgrex.query!(conn, "INSERT INTO kora(path, value) VALUES #{Enum.join(statement, ", ")} ON CONFLICT (path) DO UPDATE SET value = excluded.value", params)
 			end, pool: DBConnection.Poolboy)
 	end
 
-	def delete(config, []), do: nil
+	def delete(_config, []), do: nil
 	def delete([name: name], paths) do
 		statement =
 			paths
 			|> Enum.with_index
-			|> Enum.map(fn {item, index} -> "path <@ $#{index + 1}" end)
+			|> Enum.map(fn {_item, index} -> "path <@ $#{index + 1}" end)
 			|> Enum.join(" OR ")
 		name
 		|> Postgrex.transaction(fn conn ->
@@ -112,7 +111,7 @@ defmodule Kora.Store.Postgres.LTree do
 	# for a longer period of time. See `:binary.copy/1` for more
 	# information.Postgrex.Types.define(MyApp.Types, [{MyApp.LTree, :copy}])
 
-	def init(opts) when opts in [:reference, :copy], do: opts
+	def init(opts) when opts === :copy or opts === :reference, do: opts
 
 	# Use this extension when `type` from %Postgrex.TypeInfo{} is "ltree"
 	def matching(_opts), do: [type: "ltree"]

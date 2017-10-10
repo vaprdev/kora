@@ -1,4 +1,5 @@
 defmodule Kora.Config do
+
 	def writes(), do: Application.get_env(:kora, :writes) || []
 	def read(), do: Application.get_env(:kora, :read)
 	def interceptors(), do: Application.get_env(:kora, :interceptors) || []

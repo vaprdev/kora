@@ -1,13 +1,12 @@
 defmodule Kora.Worker do
 	use GenServer
-	alias Kora.UUID
 	alias Kora.Dynamic
 
 	def start_link(module, state), do: GenServer.start_link(__MODULE__, [module, state])
 	def start_link(module, key, args), do: GenServer.start_link(__MODULE__, [module, key, args], name: String.to_atom("#{inspect(module)}-#{key}"))
 
 	def init([module, key, args]) do
-		case (path(key, module) ++ ["data"]) |> Kora.query_path do
+		case (path(key, module) ++ ["data"]) |> Kora.query_path! do
 			nil ->
 				args
 				|> module.first
@@ -35,7 +34,7 @@ defmodule Kora.Worker do
 
 	def path(key, module), do: ["kora:worker", inspect(module), key]
 
-	defp handle_result({:stop, :shutdown, next}, state) do
+	defp handle_result({:stop, :shutdown, _next}, state) do
 		state.key
 		|> path(state.module)
 		|> Kora.delete
@@ -78,7 +77,7 @@ defmodule Kora.Worker do
 
 	def resume(module) do
 		["kora:worker", inspect(module)]
-		|> Kora.query_path
+		|> Kora.query_path!
 		|> Dynamic.default(%{})
 		|> Map.values
 		|> Enum.each(fn %{"args" => args, "key" => key} ->
@@ -90,7 +89,6 @@ end
 
 defmodule Kora.Worker.Supervisor do
 	use Supervisor
-	alias Kora.Dynamic
 
 	def start_link(module) do
 		Supervisor.start_link(__MODULE__, [], name: module)
@@ -98,7 +96,7 @@ defmodule Kora.Worker.Supervisor do
 
 	def init(_) do
 		Supervisor.init([
-			Supervisor.child_spec(Kora.Worker, restart: :transient, start: { Kora.Worker, :start_link, []})
+			Supervisor.child_spec(Kora.Worker, restart: :transient, start: {Kora.Worker, :start_link, []})
 		], strategy: :simple_one_for_one)
 	end
 end

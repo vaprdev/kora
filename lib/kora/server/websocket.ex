@@ -34,7 +34,7 @@ defmodule Kora.Websocket do
 
 	end
 
-	def websocket_handle(msg, state) do
+	def websocket_handle(_msg, state) do
 		{:noreply, state}
 	end
 

@@ -1,6 +1,11 @@
 defmodule Kora.Mutation do
 	alias Kora.Dynamic
 
+	@type mutation :: %{merge: map, delete: map}
+
+	@type layer :: {list(String.t), mutation}
+
+	@spec new(map, map) :: mutation
 	def new(merge \\ %{}, delete \\ %{}) do
 		%{
 			merge: merge || %{},
@@ -8,9 +13,19 @@ defmodule Kora.Mutation do
 		}
 	end
 
+	@spec merge(list(String.t), any) :: mutation
+	def merge(path, value), do: new() |> merge(path, value)
+
+	@spec merge(mutation, list(String.t), any) :: mutation
 	def merge(input, path, value), do: Dynamic.put(input, [:merge | path], value)
+
+	@spec delete(list(String.t)) :: mutation
+	def delete(path), do: new() |> delete(path)
+
+	@spec delete(mutation, list(String.t)) :: mutation
 	def delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
 
+	@spec layers(mutation) :: %{required(list(String.t)) => layer}
 	def layers(%{merge: merge, delete: delete}) do
 		merge
 		|> layers(:merge)
@@ -26,6 +41,7 @@ defmodule Kora.Mutation do
 		|> Enum.into(%{})
 	end
 
+	@spec layers(mutation, :merge | :delete) :: %{required(list(String.t)) => layer}
 	def layers(input, type) do
 		input
 		|> Dynamic.layers
@@ -34,6 +50,7 @@ defmodule Kora.Mutation do
 		end)
 	end
 
+	@spec combine(mutation, mutation) :: mutation
 	def combine(left, right) do
 		%{
 			merge:
@@ -47,6 +64,7 @@ defmodule Kora.Mutation do
 		}
 	end
 
+	@spec apply(map, mutation) :: map
 	def apply(input, mutation) do
 		deleted =
 			mutation.delete
@@ -61,9 +79,10 @@ defmodule Kora.Mutation do
 		end)
 	end
 
-	def inflate(path, layer) do
-		new
-		|> Dynamic.put([:merge | path], layer.merge)
-		|> Dynamic.put([:delete | path], layer.delete)
+	@spec inflate(list(String.t), mutation) :: mutation
+	def inflate(path, mut) do
+		new()
+		|> Dynamic.put([:merge | path], mut.merge)
+		|> Dynamic.put([:delete | path], mut.delete)
 	end
 end
