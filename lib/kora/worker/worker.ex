@@ -6,7 +6,7 @@ defmodule Kora.Worker do
 	def start_link(module, key, args), do: GenServer.start_link(__MODULE__, [module, key, args], name: String.to_atom("#{inspect(module)}-#{key}"))
 
 	def init([module, key, args]) do
-		case (path(key, module) ++ ["data"]) |> Kora.query_path do
+		case (path(key, module) ++ ["data"]) |> Kora.query_path! do
 			nil ->
 				args
 				|> module.first
