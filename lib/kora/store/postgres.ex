@@ -83,7 +83,6 @@ defmodule Kora.Store.Postgres do
 			name: :postgres,
 			pool: DBConnection.Poolboy,
         ], opts)
-        |> IO.inspect
 		Postgrex.child_spec(opts)
 	end
 

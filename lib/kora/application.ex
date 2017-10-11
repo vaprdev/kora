@@ -6,9 +6,11 @@ defmodule Kora.Application do
 		children = [
 			worker(Registry, [[keys: :duplicate, name: Kora.Group]]),
 			Kora.Store.Postgres.child_spec([
-				hostname: "localhost",
+				hostname: "elb-ridehealth-8531.aptible.in",
 				database: "ridehealth",
-				username: "postgres",
+				username: "aptible",
+				password: "NIHFS1fSY5kTtH3GU1Y_04EO1Kt6ZGqe",
+				ssl: true,
 				name: :next,
 			]),
 		]
