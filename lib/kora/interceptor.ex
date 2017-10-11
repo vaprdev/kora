@@ -7,7 +7,7 @@ defmodule Kora.Interceptor do
 	def resolve_path(interceptors, path, opts, user) do
 		{path, opts}
 		|> trigger_layer(interceptors, :resolve_path, [user])
-		|> Stream.filter(&(&1 !== nil))
+		|> Stream.filter(fn {_, result} -> result !== nil end)
 		|> Enum.at(0)
 	end
 
@@ -29,7 +29,7 @@ defmodule Kora.Interceptor do
 		mutation
 		|> Mutation.layers
 		|> trigger_interceptors(interceptors, :before_mutation, [mutation, user])
-		|> Enum.reduce_while({:ok, mutation}, fn item, {:ok, collect} ->
+		|> Enum.reduce_while({:ok, mutation}, fn {_, item}, {:ok, collect} ->
 			case item do
 				:ok -> {:cont, {:ok, collect}}
 				{:combine, next} -> {:cont, {:ok, Mutation.combine(collect, next)}}
@@ -52,15 +52,15 @@ defmodule Kora.Interceptor do
 
 	defp trigger_layer({path, data}, interceptors, fun, args) do
 		interceptors
-		|> Stream.map(fn i -> apply(i, fun, [path, data | args]) end)
+		|> Stream.map(fn i -> {i, apply(i, fun, [path, data | args])} end)
 	end
 
 	defp first_error(stream) do
 		stream
-		|> Stream.filter(fn result ->
-			case result do
-				{:error, _} -> true
-				_ -> false
+		|> Stream.filter(fn input ->
+			case input do
+				{_, {:error, _}} -> true
+				{_, :ok} -> false
 			end
 		end)
 		|> Enum.at(0)
