@@ -61,6 +61,11 @@ defmodule Kora do
 		end
 	end
 
+	def query!(query, user \\ @master) do
+		{:ok, result} = Kora.query(query, user)
+		result
+	end
+
 	def query(query), do: query(query, @master)
 	def query(query, @master), do: query(query, @master, :validated)
 	def query(query, user) do

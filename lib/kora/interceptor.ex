@@ -8,6 +8,7 @@ defmodule Kora.Interceptor do
 		{path, opts}
 		|> trigger_layer(interceptors, :resolve_path, [user])
 		|> Stream.filter(fn {_, result} -> result !== nil end)
+		|> Stream.map(fn {_, result} -> result end)
 		|> Enum.at(0)
 	end
 
