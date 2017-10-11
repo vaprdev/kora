@@ -7,8 +7,9 @@ defmodule Kora.Application do
 			worker(Registry, [[keys: :duplicate, name: Kora.Group]]),
 			Kora.Store.Postgres.child_spec([
 				hostname: "localhost",
-				database: "db",
+				database: "ridehealth",
 				username: "postgres",
+				name: :next,
 			]),
 		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]

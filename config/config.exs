@@ -32,8 +32,8 @@ use Mix.Config
 config :logger, level: :error
 
 config :kora,
-	writes: [ {Kora.Store.Postgres, name: :postgres} ],
-	read: {Kora.Store.Postgres, name: :postgres},
+	writes: [ {Kora.Store.Postgres, name: :next} ],
+	read: {Kora.Store.Postgres, name: :next},
 	interceptors: [],
 	commands: []
 

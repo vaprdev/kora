@@ -16,12 +16,6 @@ defmodule Kora.Store.Postgres do
                 PRIMARY KEY(path)
             );
 		""", [], pool: DBConnection.Poolboy)
-
-		name
-        |> Postgrex.query!("""
-            CREATE UNIQUE INDEX idx_kora
-            ON kora(path)
-		""", [], pool: DBConnection.Poolboy)
 	end
 
 	def query_path([name: name], path, opts) do
@@ -56,7 +50,7 @@ defmodule Kora.Store.Postgres do
 					["($#{index}, $#{index + 1})" | statement],
 					[Enum.join(path, @delimiter), value | params],
 				}
-			end)
+            end)
 		{:ok, _} =
 			name
 			|> Postgrex.transaction(fn conn ->
@@ -88,7 +82,8 @@ defmodule Kora.Store.Postgres do
 			pool_size: 50,
 			name: :postgres,
 			pool: DBConnection.Poolboy,
-		], opts)
+        ], opts)
+        |> IO.inspect
 		Postgrex.child_spec(opts)
 	end
 

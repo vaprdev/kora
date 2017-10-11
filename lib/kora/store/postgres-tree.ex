@@ -76,6 +76,7 @@ defmodule Kora.Store.Postgres.Tree do
 			pool_size: 50,
 			name: :postgres,
 			pool: DBConnection.Poolboy,
+			ssl: true,
 		])
 		Postgrex.child_spec(opts)
 	end
