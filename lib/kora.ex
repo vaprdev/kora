@@ -127,11 +127,10 @@ defmodule Kora do
 				result -> inspect(result)
 			end
 		mut =
-			case query_path(path) do
+			case query_path!(path) do
 				nil -> mut
 				old -> Mutation.delete(mut, name ++ [inspect(old)] ++ prefix)
 			end
-		mut
-		|> Mutation.merge(name ++ [next] ++ prefix, :os.system_time(:millisecond))
+		Mutation.merge(name ++ [next] ++ prefix, :os.system_time(:millisecond))
 	end
 end
