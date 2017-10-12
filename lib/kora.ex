@@ -61,6 +61,11 @@ defmodule Kora do
 		end
 	end
 
+	def query!(query, user \\ @master) do
+		{:ok, result} = Kora.query(query, user)
+		result
+	end
+
 	def query(query), do: query(query, @master)
 	def query(query, @master), do: query(query, @master, :validated)
 	def query(query, user) do
@@ -127,11 +132,10 @@ defmodule Kora do
 				result -> inspect(result)
 			end
 		mut =
-			case query_path(path) do
+			case query_path!(path) do
 				nil -> mut
 				old -> Mutation.delete(mut, name ++ [inspect(old)] ++ prefix)
 			end
-		mut
-		|> Mutation.merge(name ++ [next] ++ prefix, :os.system_time(:millisecond))
+		Mutation.merge(name ++ [next] ++ prefix, :os.system_time(:millisecond))
 	end
 end

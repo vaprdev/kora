@@ -10,7 +10,7 @@ defmodule Kora.Process do
 			def get(args) do
 				args
 				|> name
-				|> Swarm.register_name(Kora.Swarm.Supervisor, :start_child, [__MODULE__, args])
+				|> Swarm.register_name(Kora.Process.Supervisor, :start_child, [__MODULE__, args])
 				|> case do
 					{:ok, pid} -> pid
 					{:error, {:already_registered, pid}} -> pid
@@ -37,10 +37,9 @@ defmodule Kora.Process do
 
 			def supervisor_spec do
 				import Supervisor.Spec
-				supervisor(Kora.Swarm.Supervisor, [__MODULE__], id: __MODULE__)
+				supervisor(Kora.Process.Supervisor, [__MODULE__], id: __MODULE__)
 			end
 
 		end
 	end
 end
-

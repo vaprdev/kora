@@ -4,7 +4,7 @@ defmodule Kora.Command.Query do
 	def handle_command({"kora.query", query, _v}, _from, state = %{user: user}) do
 		case Kora.query(query, user) do
 			{:error, message} -> {:error, message, state}
-			result -> {:reply, result, state}
+			{:ok, result} -> {:reply, result, state}
 		end
 	end
 
