@@ -1,4 +1,4 @@
-defmodule Kora.Worker do
+defmodule Kora.Worker.Old do
 	use GenServer
 	alias Kora.Dynamic
 

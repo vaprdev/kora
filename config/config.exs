@@ -32,8 +32,8 @@ use Mix.Config
 config :logger, level: :error
 
 config :kora,
-	writes: [ {Kora.Store.Postgres, name: :next} ],
-	read: {Kora.Store.Postgres, name: :next},
+	writes: [ {Kora.Store.Level, directory: "kora.db" } ],
+	read: {Kora.Store.Level, directory: "kora.db"},
 	interceptors: [],
 	commands: []
 
@@ -42,13 +42,13 @@ config :libcluster,
 		gossip: [
 			strategy: Cluster.Strategy.Gossip,
 			config: [
-			port: 45892,
-			if_addr: {0,0,0,0},
-			multicast_addr: {230,1,1,251},
-			# a TTL of 1 remains on the local network,
-			# use this to change the number of jumps the
-			# multicast packets will make
-			multicast_ttl: 1
+				port: 45_892,
+				if_addr: {0, 0, 0, 0},
+				multicast_addr: {230, 1, 1, 251},
+				# a TTL of 1 remains on the local network,
+				# use this to change the number of jumps the
+				# multicast packets will make
+				multicast_ttl: 1
 			],
 		],
 		# default: [

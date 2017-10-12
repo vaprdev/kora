@@ -9,7 +9,7 @@ defmodule Kora do
 
 	@master "kora-master"
 
-	def init(opts) do
+	def init(opts \\ []) do
 		Config.load(opts)
 		[Config.read() | Config.writes()]
 		|> MapSet.new

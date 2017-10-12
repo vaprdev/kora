@@ -1,4 +1,4 @@
-defmodule Kora.Swarm do
+defmodule Kora.Process do
 	defmacro __using__(_opts) do
 		quote do
 			use GenServer
@@ -10,7 +10,7 @@ defmodule Kora.Swarm do
 			def get(args) do
 				args
 				|> name
-				|> Swarm.register_name(Kora.Swarm.Supervisor, :start_child, [__MODULE__, args])
+				|> Swarm.register_name(Kora.Process.Supervisor, :start_child, [__MODULE__, args])
 				|> case do
 					{:ok, pid} -> pid
 					{:error, {:already_registered, pid}} -> pid
@@ -37,35 +37,9 @@ defmodule Kora.Swarm do
 
 			def supervisor_spec do
 				import Supervisor.Spec
-				supervisor(Kora.Swarm.Supervisor, [__MODULE__], id: __MODULE__)
+				supervisor(Kora.Process.Supervisor, [__MODULE__], id: __MODULE__)
 			end
 
 		end
-	end
-end
-
-defmodule Kora.Swarm.Supervisor do
-	def start_link(module) do
-		Supervisor.start_link(__MODULE__, [module], name: module)
-	end
-
-	def init([module]) do
-		import Supervisor.Spec
-		children = [
-			worker(module, [], restart: :temporary)
-		]
-		supervise(children, strategy: :simple_one_for_one)
-	end
-
-	def start_child(module, args) do
-		{:ok, _} = Supervisor.start_child(module, [args])
-	end
-end
-
-defmodule Kora.Swarm.Example do
-	use Kora.Swarm
-
-	def init(_args) do
-		{:ok, {}}
 	end
 end
