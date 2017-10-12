@@ -82,6 +82,6 @@ defmodule Kora.Worker.Test do
     end
 
     def handle_info(:resume, args, state) do
-        {:noreply, state}
+        {:noreply, state |> IO.inspect}
     end
 end
