@@ -1,4 +1,6 @@
 defmodule Kora.Graph do
+    alias Kora.Graph.Node
+ 
     def load(file) do
         file
         |> File.stream!([], :line)
@@ -13,52 +15,57 @@ defmodule Kora.Graph do
         Kora.merge(["kora:graph", subject, "out", predicate, object], :os.system_time(:millisecond))
     end
 
-    def out_many(subjects, predicate) do
+    def has_out(input, predicate, object), do: filter_out(input, predicate, object, true)
+    def not_out(input, predicate, object), do: filter_out(input, predicate, object, false)
+
+    def filter_out(input, predicate, object, expected) do
+        case Enumerable.impl_for(input) do
+            nil -> filter_out_single(input, predicate, object, expected)
+            _ -> filter_out_many(input, predicate, object, expected)
+        end
+    end
+   
+    def filter_out_many(subjects, predicate, object, expected) do
         subjects
-        |> Task.async_stream(fn key -> {key, out(key, predicate)} end, max_concurrency: 100)
+        |> Task.async_stream(fn subject -> {subject, filter_out_single(subject, predicate, object, expected)} end, max_concurrency: 100)
         |> unwrap_tasks
+        |> Stream.filter(fn {_, result} -> result end)
+        |> Stream.map(fn {result, _} -> result end)
     end
 
-    def out(subject, predicate) do
-        Kora.Graph.Node.out(subject, predicate)
+    def filter_out_single(subject, predicate, object, expected) do
+        Node.filter_out(subject, predicate, object) === expected
     end
 
-    def check_out_many(subjects, predicate, object, expected) do
+    def out(input, predicate, via \\ nil)  do
+        case Enumerable.impl_for(input) do
+            nil -> out_single(input, predicate)
+            _ -> out_many(input, predicate, via)
+        end
+    end
+
+    defp out_many(subjects, predicate, via) do
         subjects
-        |> check_out(predicate, object)
-        |> Stream.filter(fn {key, result} -> result === expected end)
-        |> Stream.map(fn {key, _} -> key end)
-    end
-
-    def check_out(subjects, predicate, object) when is_list(subjects) do
-        subjects
-        |> Task.async_stream(fn key -> {key, check_out(key, predicate, object)} end, max_concurrency: 100)
+        |> Task.async_stream(fn subject -> {subject, out_single(subject, predicate)} end)
         |> unwrap_tasks
+        |> Stream.flat_map(fn {subject, results} -> results |> Stream.map(&({subject, &1})) end)
+        |> Stream.map(fn {subject, result} ->
+            case via do
+                nil -> result
+                _ -> {subject, result}
+            end
+        end)
     end
 
-    def check_out(subject, predicate, object) do
-        Kora.Graph.Node.check_out(subject, predicate, object)
-    end
-
-    def flatten(results) do
-        results
-        |> Stream.flat_map(fn {via, result} -> result end)
-    end
-
-    def count(input) do
-        input
-        |> Task.async_stream(fn {key, values} -> {key, Enum.count(values)} end)
-        |> unwrap_tasks
-    end
-
-    def uniq(input) do
-        Enum.uniq(input)
-    end
-
-    def ensure(input, expected) do
-        input
-        |> Stream.filter(fn {key, result} -> result === expected end)
-        |> Stream.map(fn {key, _} -> key end)
+    defp out_single(subject, predicate) do
+        Stream.resource(
+            fn -> :start end,
+            fn
+                :start -> {Node.out(subject, predicate), :done}
+                :done -> {:halt, nil}
+            end,
+            fn _ -> end
+        )
     end
 
     defp unwrap_tasks(input) do
