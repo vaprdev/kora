@@ -11,7 +11,7 @@ defmodule Kora.Store.Postgres do
 		name
 		|> Postgrex.query!("""
 			CREATE TABLE IF NOT EXISTS kora (
-                path text COLLATE 'C',
+                path text,
                 value text,
                 PRIMARY KEY(path)
             );
