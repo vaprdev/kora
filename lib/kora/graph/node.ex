@@ -13,10 +13,10 @@ defmodule Kora.Graph.Node do
         |> GenServer.call({:out, predicate})
     end
 
-    def check_out(subject, predicate, object) do
+    def filter_out(subject, predicate, object) do
         subject
         |> get
-        |> GenServer.call({:check_out, predicate, object})
+        |> GenServer.call({:filter_out, predicate, object})
     end
 
     def handle_info(:cache, state) do
@@ -35,7 +35,7 @@ defmodule Kora.Graph.Node do
         {:reply, result, state}
     end
 
-    def handle_call({:check_out, predicate, object}, _from, state) do
+    def handle_call({:filter_out, predicate, object}, _from, state) do
         result =
             state.data
             |> Dynamic.get(["kora:graph", state.key, "out", predicate, object]) != nil
