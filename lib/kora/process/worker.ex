@@ -5,7 +5,7 @@ defmodule Kora.Worker do
 
     defmacro __using__(_opts) do
         quote do
-            use Kora.Process
+            use Radar.Process
 
             def resume do
                 ["kora:module:workers", inspect(__MODULE__)]
@@ -73,7 +73,7 @@ defmodule Kora.Worker do
 
 end
 
-defmodule Kora.Worker.Test do
+defmodule Kora.Worker.Example do
     use Kora.Worker
 
     def handle_info(:resume, args, nil) do

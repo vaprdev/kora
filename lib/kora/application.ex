@@ -5,8 +5,9 @@ defmodule Kora.Application do
 		import Supervisor.Spec, warn: false
 		children = [
 			worker(Registry, [[keys: :duplicate, name: Kora.Group]]),
-			Kora.Worker.Test.supervisor_spec(),
 			Kora.Graph.Node.supervisor_spec(),
+			Kora.Agent.Example.supervisor_spec(),
+			Kora.Worker.Example.supervisor_spec(),
 		]
 		opts = [strategy: :one_for_one, name: Kora.Supervisor]
 		Supervisor.start_link(children, opts)
