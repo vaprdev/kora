@@ -1,6 +1,5 @@
 defmodule Kora.Command.Template do
 	use Kora.Command
-	alias Kora.Dynamic
 
 	def handle_command({"kora.template.add", body, _v}, _from, state) do
 		%{

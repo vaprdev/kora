@@ -1,6 +1,5 @@
 defmodule Kora.Graph.Node do
     use Kora.Agent
-    alias Kora.Dynamic
     alias Kora.Query
 
     def sync(key) do

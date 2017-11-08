@@ -6,30 +6,6 @@ defmodule Kora.Domain do
 		end
 	end
 
-	# defmacro schema(prefix, body) do
-	# 	quote do
-	# 		@prefix unquote(prefix)
-	# 		unquote(body)
-	# 	end
-	# end
-
-	# defmacro field(name, opts \\ []) do
-	# 	direct =
-	# 		path
-	# 		|> Enum.reverse
-	# 		|> Stream.take_while(&is_binary/1)
-	# 		|> Enum.reverse
-	# 	quote do
-	# 		def unquote(name)(key) when is_binary(key) do
-	# 			Kora.query_path([@prefix, key, Atom.to_string(unquote(name))])
-	# 		end
-
-	# 		def unquote(name)(input) when is_map(input) do
-	# 			Kora.Dynamic.get(input, direct)
-	# 		end
-	# 	end
-	# end
-
 	defmacro get(name, path, callback) do
 		count =
 			path
@@ -50,9 +26,36 @@ defmodule Kora.Domain do
 			end
 
 			def unquote(name)(input) when is_map(input) do
-				value = Kora.Dynamic.get(input, unquote(direct))
+				value = Dynamic.get(input, unquote(direct))
 				unquote(callback).(value)
 			end
 		end
 	end
+
+	defmacro extract(a, path, body) do
+		quote do
+			def unquote(a) do
+				result =
+					unquote(path)
+					|> Kora.query_path!
+				unquote(body).(result)
+			end
+		end
+	end
+
+	defmacro map | path do
+		quote do
+			Dynamic.get(unquote(map), unquote(path))
+		end
+	end
+end
+
+defmodule Kora.Domain.Example do
+	import Kora.Domain
+
+	extract patient(arg1, arg2), ["patient"] do
+
+	end
+	
+
 end

@@ -1,5 +1,4 @@
 defmodule Kora.Mutation do
-	alias Kora.Dynamic
 
 	@type mutation :: %{merge: map, delete: map}
 

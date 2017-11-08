@@ -2,7 +2,6 @@ defmodule Kora.Store do
 	# @callback delete(config, layers)
 	# @callback merge(config, layers)
 	# @callback query_path(config, path)
-	alias Kora.Dynamic
 
 	def write({module, config}, mutation) do
 		deletes =
@@ -37,30 +36,8 @@ defmodule Kora.Store do
 			end
 		)
 		|> Stream.flat_map(fn x -> x end)
-		|> transform_keys(opts)
 		|> Enum.reduce(%{}, fn {path, value}, collect -> Dynamic.put(collect, path, decode(value)) end)
-		|> extract_result(path, opts)
-	end
-
-	defp transform_keys(stream, %{keys: :atom}) do
-		stream
-		|> Stream.map(fn {path, value} ->
-			{
-				Enum.map(path, &String.to_atom/1),
-				value
-			}
-		end)
-	end
-	defp transform_keys(stream, _), do: stream
-
-	defp extract_result(input, path, %{keys: :atom}) do
-		path =
-			path
-			|> Enum.map(&String.to_atom/1)
-		Dynamic.get(input, path)
-	end
-	defp extract_result(input, path, _) do
-		Dynamic.get(input, path)
+		|> Dynamic.get(path)
 	end
 
 	def encode(input), do: Poison.encode!(input)
