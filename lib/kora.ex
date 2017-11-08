@@ -3,7 +3,6 @@ defmodule Kora do
 	alias Kora.Store
 	alias Kora.Query
 	alias Kora.Interceptor
-	alias Kora.Dynamic
 	alias Kora.Config
 	require IEx
 

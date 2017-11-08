@@ -1,6 +1,5 @@
 defmodule Kora.Worker.Old do
 	use GenServer
-	alias Kora.Dynamic
 
 	def start_link(module, state), do: GenServer.start_link(__MODULE__, [module, state])
 	def start_link(module, key, args), do: GenServer.start_link(__MODULE__, [module, key, args], name: String.to_atom("#{inspect(module)}-#{key}"))

@@ -1,5 +1,4 @@
 defmodule Kora.Query do
-	alias Kora.Dynamic
 
 	def new(), do: %{}
 

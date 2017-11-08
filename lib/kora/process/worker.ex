@@ -1,6 +1,5 @@
 defmodule Kora.Worker do
     alias Kora.UUID
-    alias Kora.Dynamic
     alias Kora.Mutation
     @root "kora:worker:info"
 

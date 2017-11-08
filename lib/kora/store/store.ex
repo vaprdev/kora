@@ -2,7 +2,6 @@ defmodule Kora.Store do
 	# @callback delete(config, layers)
 	# @callback merge(config, layers)
 	# @callback query_path(config, path)
-	alias Kora.Dynamic
 
 	def write({module, config}, mutation) do
 		deletes =
