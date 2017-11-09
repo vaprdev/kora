@@ -1,7 +1,6 @@
 defmodule Kora.Worker do
     alias Kora.UUID
     alias Kora.Mutation
-    @root "kora:worker:info"
 
     defmacro __using__(_opts) do
         quote do
@@ -30,7 +29,7 @@ defmodule Kora.Worker do
             end
 
             def init(key) do
-                send(self, :resume)
+                send(self(), :resume)
                 {:ok, load_state(key)}
             end
 
@@ -76,11 +75,11 @@ end
 defmodule Kora.Worker.Example do
     use Kora.Worker
 
-    def handle_info(:resume, args, nil) do
+    def handle_info(:resume, _args, nil) do
         {:noreply, %{foo: :bar}}
     end
 
-    def handle_info(:resume, args, state) do
+    def handle_info(:resume, _args, state) do
         {:noreply, state |> IO.inspect}
     end
 end

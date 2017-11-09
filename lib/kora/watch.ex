@@ -2,7 +2,7 @@ defmodule Kora.Watch do
 	alias Kora.Mutation
 
 	def watch(path), do: watch(path, self())
-	def watch(path, pid \\ self()) do
+	def watch(path, pid) do
 		path
 		|> group
 		|> Radar.join(pid)

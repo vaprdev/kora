@@ -1,5 +1,4 @@
 defmodule Kora.Agent do
-    alias Kora.Mutation
 
     defmacro __using__(_opts) do
         quote do
@@ -42,7 +41,7 @@ end
 defmodule Kora.Agent.Example do
     use Kora.Agent
 
-    def sync(key) do
+    def sync(_key) do
         Kora.Query.get(["a"], %{})
     end
 

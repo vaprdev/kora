@@ -64,7 +64,7 @@ defmodule Kora.Graph do
                 :start -> {Node.out(subject, predicate), :done}
                 :done -> {:halt, nil}
             end,
-            fn _ -> end
+            fn _ -> :skip end
         )
     end
 
