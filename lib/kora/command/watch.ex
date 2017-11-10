@@ -6,7 +6,7 @@ defmodule Kora.Command.Watch do
 		{:reply, true, state}
 	end
 
-	def handle_info({:broadcast, {:mutation, _}, mut}, _source, state) do
+	def handle_cast({:mutation, mut}, _source, state) do
 		{"kora.mutation", mut, state}
 	end
 end
