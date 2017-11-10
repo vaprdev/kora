@@ -84,4 +84,16 @@ defmodule Kora.Mutation do
 		|> Dynamic.put([:merge | path], mut.merge)
 		|> Dynamic.put([:delete | path], mut.delete)
 	end
+
+	def from_diff(old, new) do
+		old
+		|> Dynamic.flatten
+		|> Enum.reduce(new(new), fn {path, value}, collect ->
+			case Dynamic.get(new, path) do
+				^value -> Dynamic.delete(collect, [:merge | path])
+				nil -> delete(collect, path)
+				next -> merge(collect, path, next)
+			end
+		end)
+	end
 end
