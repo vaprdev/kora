@@ -1,6 +1,5 @@
-defmodule Scheduler do 
+defmodule Kora.Scheduler do 
         alias Kora.UUID
-        alias Kora.Mutation
         use Kora.Worker
         
         def handle_info(:resume, [key, timestamp | _rest], _state) do
@@ -21,19 +20,6 @@ defmodule Scheduler do
                 key = UUID.ascending()
                 __MODULE__.create([key, timestamp, Atom.to_string(mod), Atom.to_string(fun), args], key)
                 key 
-        end
-        
-        def create([key, timestamp, mod, fun, args], args) do 
-                ["kora.scheduler", key]
-                |> Mutation.merge(%{
-                        "key" => key, 
-                        "timestamp" => timestamp, 
-                        "mod" => mod, 
-                        "fun" => fun, 
-                        "args" => args
-                })
-                
-                key
         end
         
         def cancel(key) do 
