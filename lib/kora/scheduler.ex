@@ -1,7 +1,7 @@
 defmodule Scheduler do 
         alias Kora.UUID
         alias Kora.Mutation
-        use Kora.worker
+        use Kora.Worker
         
         def handle_info(:resume, [key, timestamp | _rest], _state) do
                 Process.send_after(self(), :process, max(timestamp - :os.system_time(:millisecond), 0)        
