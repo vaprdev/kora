@@ -6,6 +6,7 @@ defmodule Kora.Application do
 		children = [
 			worker(Registry, [[keys: :duplicate, name: Kora.Group]]),
 			Kora.Graph.Node.supervisor_spec(),
+			Kora.Scheduler.supervisor_spec(),
 			Kora.Agent.Example.supervisor_spec(),
 			Kora.Worker.Example.supervisor_spec(),
 		]
