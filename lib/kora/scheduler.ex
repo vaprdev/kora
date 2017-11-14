@@ -23,8 +23,8 @@ defmodule Kora.Scheduler do
         end
 		
 		def schedule(timestamp, mod, fun, args, key) do
-			__MODULE__.create([key, timestamp, Atom.to_string(mod), Atom.to_string(fun), args], key)
-			key			
+				__MODULE__.create([key, timestamp, Atom.to_string(mod), Atom.to_string(fun), args], key)
+				key			
 		end
 
 		def cancel(key) do 
