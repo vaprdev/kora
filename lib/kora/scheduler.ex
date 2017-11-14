@@ -3,8 +3,8 @@ defmodule Kora.Scheduler do
         use Kora.Worker
         
         def handle_info(:resume, [key, timestamp | _rest], _state) do
-                Process.send_after(self(), :process, max(timestamp - :os.system_time(:millisecond), 0)        
-                %{:noreply, %{}}
+                Process.send_after(self(), :process, max(timestamp - :os.system_time(:millisecond), 0))
+                {:noreply, %{}}
         end
         
         def handle_info(:process, [key, _timestamp, mod, fun, args], state) do 
