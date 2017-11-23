@@ -171,9 +171,33 @@ defmodule Kora.Mutation do
 	end
 
 	@doc ~S"""
-	Accepts a list containting keys and a mutation. Returns a mutation with the 
-	supplied keys as the highest-points in the merge path. A delete path is added
-	for those same keys. 
+	Accepts a list and mutation, and returns a new mutation with the given
+	mutation nested at the given path.
+	
+	## Example
+	iex> Kora.Mutation.inflate(
+	...>	["a", "b"],
+	...>	%{
+	...>		delete: %{}
+	...>		merge: %{
+	...>			"a" => 1
+	...>		}
+	...>	}
+	...>)
+	%{
+		delete: %{
+			"a" => %{
+				"b" => %{}
+			}
+		},
+		merge: %{
+			"a" => %{
+				"b" => %{
+					"a" => 1
+				}
+			}
+		}
+	}
 	"""
 	@spec inflate(list(String.t), mutation) :: mutation
 	def inflate(path, mut) do
@@ -182,13 +206,63 @@ defmodule Kora.Mutation do
 		|> Dynamic.put([:delete | path], mut.delete)
 	end
 
-	
+	@doc ~S"""
+	Accepts two mutations, and returns a new mutation of alterations. Deletes
+	and paths from old mutation not presents in new mutation. If both mutations
+	have the same path with differnet values, the value from the new mutation is
+	chosen. If a path is present in old mutation and not new, that's added to the 
+	merge. If a path is present in both mutations and shares a value, it's not 
+	added to the merge. 
+
+	## Example 
+	iex> Kora.Mutation.from_diff(
+	...>	%{
+	...>		delete: %{}, 
+	...>		merge: %{
+	...>			"phone" => %{
+	...>				"dad" => 646, 
+	...>				"mom" => 415
+	...>			}
+	...>		}
+	...>	}, 
+	...>	%{
+	...>		delete: %{}, 
+	...>		merge: %{
+	...>			"phone" => %{
+	...>				"mom" => 415, 
+	...>				"uncle" => 343
+	...>			}
+	...>		}
+	...>	}
+	...>)
+	%{
+		delete: %{
+			merge: %{
+				"phone" => %{
+					"dad" => 1
+				}
+			}
+		},
+		merge: %{
+			delete: %{}, 
+			merge: %{
+				"phone" => %{
+					"uncle" => 343
+				}
+			}
+		}
+	}	
+	"""
 	def from_diff(old, new) do
 		old
 		|> Dynamic.flatten
+		# for each path inside the old mutation 
 		|> Enum.reduce(new(new), fn {path, value}, collect ->
+			# get the value at the path from the old mutation  
 			case Dynamic.get(new, path) do
+				# if the values match, delete the same part from the merge 
 				^value -> Dynamic.delete(collect, [:merge | path])
+				
 				nil -> delete(collect, path)
 				next -> merge(collect, path, next)
 			end
