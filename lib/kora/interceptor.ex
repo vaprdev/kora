@@ -57,14 +57,20 @@ defmodule Kora.Interceptor do
     end
 
     defp first_error(stream) do
-        stream
+        list = stream
         |> Stream.filter(fn input ->
             case input do
                 {_, {:error, _}} -> true
                 {_, :ok} -> false
             end
         end)
-        |> Enum.at(0)
+        |> Enum.at(0) 
+        
+        thing = case is_nil(list) do
+            true -> nil
+            false -> {_, thing} = list
+        end
+        thing
     end
 
     @type mutation :: %{required(:merge) => map, required(:delete) => map}
