@@ -8,7 +8,7 @@ defmodule Kora.Mutation do
 	@type layer :: {list(String.t), mutation}
 
 	@doc ~S"""
-	Creates a new mutaton with empty delete and merge maps.
+	Creates a new mutation with empty delete and merge maps.
 
 	## Example
 
@@ -24,21 +24,20 @@ defmodule Kora.Mutation do
 		}
 	end
 
-	@doc ~S"""
-	Turns a given list into a listed set of keys, with the final key pointing to
-	the supplied value.
-
-	## Example 
-
-		iex> Kora.Mutation.merge(["a","b","c"], "true")
-		%{delete: %{}, merge: %{"a" => %{"b" => %{"c" => "true"}}}}
-	
-	"""
+	@doc false
 	@spec merge(list(String.t), any) :: mutation
 	def merge(path, value), do: new() |> merge(path, value)
 
+	@doc ~S"""
+	Places the value at the given path in the merge.  
+	
+	## Example 
 
-	@doc false
+		iex> mutation = %{delete: %{}, merge: %{"a" => %{"b" => 1}}}
+		iex> Kora.Mutation.merge(mutation, ["a","c"], 2)
+		%{delete: %{}, merge: %{"a" => %{"b" => 1, "c" => 2}}}
+	
+	"""
 	@spec merge(mutation, list(String.t), any) :: mutation
 	def merge(input, path, value), do: Dynamic.put(input, [:merge | path], value)
 
@@ -47,24 +46,24 @@ defmodule Kora.Mutation do
 	def delete(path), do: new() |> delete(path)
 	
 	@doc ~S"""
-	Accepts a mutation and a list of keys, and returns a new mutation with a 
-	delete path corresponding to passed-in list.
+	Adds a path to be deleted to the input mutation.
 	
 	## Example
-	iex> Kora.Mutation.delete(
-	...>	%{
-	...>		delete: %{}, 
-	...>		merge: %{
-	...>			"a" => %{
-	...>				"b" => %{
-	...>					"c" => true
-	...>				}
-	...>			}
-	...>		}
-	...>	},
-	...>	["c"]
-	...> )
-	%{delete: %{"c" => 1}, merge: %{"a" => %{"b" => %{"c" => true}}}}
+	
+		iex> Kora.Mutation.delete(
+		...>	%{
+		...>		delete: %{}, 
+		...>		merge: %{
+		...>			"a" => %{
+		...>				"b" => %{
+		...>					"c" => true
+		...>				}
+		...>			}
+		...>		}
+		...>	},
+		...>	["c"]
+		...> )
+		%{delete: %{"c" => 1}, merge: %{"a" => %{"b" => %{"c" => true}}}}
 	"""
 	@spec delete(mutation, list(String.t)) :: mutation
 	def delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
@@ -73,25 +72,26 @@ defmodule Kora.Mutation do
 	Returns a map of levels for the given mutation. Each level is a key-value 
 	pair, where the key is a list of keys representing the current path, and the 
 	value is the remaining part of the mutation structure.
+	
 	## Example 
 	
-	iex> %{delete: %{}, merge: %{"a" => %{"b" => true}}} |> Kora.Mutation.layers
-	%{
-		[] => %{
-			delete: %{}, 
-			merge: %{
-				"a" => %{
+		iex> %{delete: %{}, merge: %{"a" => %{"b" => true}}} |> Kora.Mutation.layers
+		%{
+			[] => %{
+				delete: %{}, 
+				merge: %{
+					"a" => %{
+						"b" => true
+					}
+				}
+			}, 
+			["a"] => %{
+				delete: %{}, 
+				merge: %{
 					"b" => true
 				}
 			}
-		}, 
-		["a"] => %{
-			delete: %{}, 
-			merge: %{
-				"b" => true
-			}
 		}
-	}
 	"""
 	@spec layers(mutation) :: %{required(list(String.t)) => layer}
 	def layers(%{merge: merge, delete: delete}) do
@@ -120,10 +120,10 @@ defmodule Kora.Mutation do
 	end
 
 	@doc ~S"""
-	Accepts two mutations and creates a new mutation containing both mutations 
-	in the merge path.
-
+	Combines two mutations into one.
+	
 	## Example
+
 		iex> Kora.Mutation.combine(
 		...>	%{delete: %{}, merge: %{"a" => true}}, 
 		...>	%{delete: %{}, merge: %{"b" => false}}
@@ -145,10 +145,10 @@ defmodule Kora.Mutation do
 	end
 
 	@doc ~S"""
-	Accepts a map and mutation and returns a map containing the merge section of 
-	the mutation.
-
+	Applies the entire mutation to the input map.
+	
 	## Example 
+
 		iex> Kora.Mutation.apply(
 		...> 	%{"b" => false}, 
 		...> 	%{delete: %{}, merge: %{"a" => true}}		
@@ -175,29 +175,30 @@ defmodule Kora.Mutation do
 	mutation nested at the given path.
 	
 	## Example
-	iex> Kora.Mutation.inflate(
-	...>	["a", "b"],
-	...>	%{
-	...>		delete: %{}
-	...>		merge: %{
-	...>			"a" => 1
-	...>		}
-	...>	}
-	...>)
-	%{
-		delete: %{
-			"a" => %{
-				"b" => %{}
-			}
-		},
-		merge: %{
-			"a" => %{
-				"b" => %{
-					"a" => 1
+	
+		iex> Kora.Mutation.inflate(
+		...>	["a", "b"],
+		...>	%{
+		...>		delete: %{},
+		...>		merge: %{
+		...>			"a" => 1
+		...>		}
+		...>	}
+		...>)
+		%{
+			delete: %{
+				"a" => %{
+					"b" => %{}
+				}
+			},
+			merge: %{
+				"a" => %{
+					"b" => %{
+						"a" => 1
+					}
 				}
 			}
 		}
-	}
 	"""
 	@spec inflate(list(String.t), mutation) :: mutation
 	def inflate(path, mut) do
@@ -207,62 +208,23 @@ defmodule Kora.Mutation do
 	end
 
 	@doc ~S"""
-	Accepts two mutations, and returns a new mutation of alterations. Deletes
-	and paths from old mutation not presents in new mutation. If both mutations
-	have the same path with differnet values, the value from the new mutation is
-	chosen. If a path is present in old mutation and not new, that's added to the 
-	merge. If a path is present in both mutations and shares a value, it's not 
-	added to the merge. 
-
-	## Example 
-	iex> Kora.Mutation.from_diff(
-	...>	%{
-	...>		delete: %{}, 
-	...>		merge: %{
-	...>			"phone" => %{
-	...>				"dad" => 646, 
-	...>				"mom" => 415
-	...>			}
-	...>		}
-	...>	}, 
-	...>	%{
-	...>		delete: %{}, 
-	...>		merge: %{
-	...>			"phone" => %{
-	...>				"mom" => 415, 
-	...>				"uncle" => 343
-	...>			}
-	...>		}
-	...>	}
-	...>)
-	%{
-		delete: %{
-			merge: %{
-				"phone" => %{
-					"dad" => 1
-				}
-			}
-		},
-		merge: %{
-			delete: %{}, 
-			merge: %{
-				"phone" => %{
-					"uncle" => 343
-				}
-			}
-		}
-	}	
+	Takes two maps and returns a mutation that could be applied to turn the 
+	the first map into the second.
+	
+	## Example
+	
+		iex> Kora.Mutation.from_diff( 
+		...>	%{"a" => 1}, 
+		...>	%{"b" => 2}
+		...>) 
+		%{delete: %{"a" => 1}, merge: %{"b" => 2}}	
 	"""
 	def from_diff(old, new) do
 		old
 		|> Dynamic.flatten
-		# for each path inside the old mutation 
 		|> Enum.reduce(new(new), fn {path, value}, collect ->
-			# get the value at the path from the old mutation  
 			case Dynamic.get(new, path) do
-				# if the values match, delete the same part from the merge 
-				^value -> Dynamic.delete(collect, [:merge | path])
-				
+				^value -> Dynamic.delete(collect, [:merge | path])	
 				nil -> delete(collect, path)
 				next -> merge(collect, path, next)
 			end
